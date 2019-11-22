@@ -1,4 +1,4 @@
-import httpClient, streams, strutils, xmltools
+import httpClient, streams, strutils, xmltools, yaml.serialization
 
 type
   FedoraConnection* = ref object
@@ -6,6 +6,13 @@ type
     results*: seq[string]
     query*: string
     max_results*: int
+
+  ConfigSettings* = object
+    username: string
+    password: string
+    base_url: string
+    max_results: int
+    output_directory: string
 
 var client = newHttpClient()
 
@@ -42,6 +49,14 @@ proc populate_results(connection: FedoraConnection): seq[string] =
     url = connection.base_url & "/fedora/objects?query=pid%7E" & connection.query & "*&pid=true&resultFormat=xml&maxResults=" & $connection.max_results & "&sessionToken=" & token
   return pids  
 
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080", query: "test", max_results: 2)
+proc read_yaml_config(file_path: string): ConfigSettings =
+  var config_settings: ConfigSettings
+  var file_stream = newFileStream(file_path)
+  load(file_stream, config_settings)
+  file_stream.close()
+  return config_settings
+
+var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
+var fedora_connection: FedoraConnection = FedoraConnection(base_url:yaml_settings.base_url, query: "test", max_results: yaml_settings.max_results)
 fedora_connection.results = populate_results(fedora_connection)
 echo fedora_connection.results
