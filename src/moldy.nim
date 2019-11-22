@@ -4,6 +4,8 @@ type
   FedoraConnection* = ref object
     base_url*: string
     results*: seq[string]
+    query*: string
+    max_results*: int
 
 var client = newHttpClient()
 
@@ -29,7 +31,7 @@ proc populate_results(connection: FedoraConnection): seq[string] =
   var pids: seq[string] = @[]
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
-  var url: string = connection.base_url & "/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml&maxResults=2"
+  var url: string = connection.base_url & "/fedora/objects?query=pid%7E" & connection.query & "*&pid=true&resultFormat=xml&maxResults=" & $connection.max_results
   var response: string = ""
   while token.len > 0:
     response = client.getContent(url)
@@ -37,9 +39,9 @@ proc populate_results(connection: FedoraConnection): seq[string] =
     for pid in new_pids:
       pids.add(pid)
     token = get_token(response)
-    url = url & "&sessionToken=" & token
+    url = connection.base_url & "/fedora/objects?query=pid%7E" & connection.query & "*&pid=true&resultFormat=xml&maxResults=" & $connection.max_results & "&sessionToken=" & token
   return pids  
 
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080")
+var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080", query: "test", max_results: 2)
 fedora_connection.results = populate_results(fedora_connection)
 echo fedora_connection.results
