@@ -3,9 +3,7 @@ import httpClient, streams, strutils, xmltools
 type
   FedoraConnection* = ref object
     base_url*: string
-    response*: string
     results*: seq[string]
-    token*: string
 
 var client = newHttpClient()
 
@@ -42,6 +40,6 @@ proc populate_results(connection: FedoraConnection): seq[string] =
     url = url & "&sessionToken=" & token
   return pids  
 
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080", token: "temporary", response: client.getContent("http://localhost:8080/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml"))
+var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080")
 fedora_connection.results = populate_results(fedora_connection)
 echo fedora_connection.results
