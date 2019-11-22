@@ -9,7 +9,7 @@ type
 
 var client = newHttpClient()
 
-proc grab_pids(response: string): seq[string] =
+proc grab_pids*(response: string): seq[string] =
   var pids: seq[string] = @[]
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "pid")
@@ -19,7 +19,7 @@ proc grab_pids(response: string): seq[string] =
       pids.add(new_word)
   return pids
 
-proc get_token(response: string): string =
+proc get_token*(response: string): string =
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "token")
   var token: string = ""
