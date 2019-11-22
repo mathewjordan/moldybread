@@ -1,4 +1,4 @@
-import httpClient, streams, strutils, xmltools, yaml.serialization
+import httpClient, streams, strutils, xmltools, yaml.serialization, base64
 
 type
   FedoraConnection* = ref object
@@ -6,6 +6,8 @@ type
     results*: seq[string]
     query*: string
     max_results*: int
+    output_directory: string
+    authentication: (string, string)
 
   ConfigSettings* = object
     username: string
@@ -13,6 +15,11 @@ type
     base_url: string
     max_results: int
     output_directory: string
+  
+  Message* = ref object
+    errors*: seq[string]
+    successes*: seq[string]
+    attempts*: int
 
 var client = newHttpClient()
 
@@ -33,6 +40,23 @@ proc get_token*(response: string): string =
   if results.len > 0:
     token = results.replace("<token>", "").replace("</token>", "")
   return token
+  
+proc harvest_metadata(datastream_id: string, connection: FedoraConnection): Message =
+  var url: string
+  var successes, errors: seq[string]
+  var attempts: int
+  for pid in connection.results:
+    url = connection.base_url  & "/fedora/objects/" & pid & "/datastreams/" & datastream_id & "/content"
+    client.headers["Authorization"] = "Basic " & base64.encode(connection.authentication[0] & ":" & connection.authentication[1])
+    var response = client.request(url, httpMethod = HttpGet)
+    if response.status == "200 OK":
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+  attempts = attempts
+  let message: Message = Message(errors: errors, successes: successes, attempts: attempts)
+  return message
 
 proc populate_results(connection: FedoraConnection): seq[string] =
   var pids: seq[string] = @[]
@@ -57,6 +81,11 @@ proc read_yaml_config(file_path: string): ConfigSettings =
   return config_settings
 
 var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:yaml_settings.base_url, query: "test", max_results: yaml_settings.max_results)
+var fedora_connection: FedoraConnection = FedoraConnection(base_url:yaml_settings.base_url,
+ query: "test", 
+ max_results: yaml_settings.max_results,
+ output_directory: yaml_settings.output_directory,
+ authentication: (yaml_settings.username, yaml_settings.password)
+ )
 fedora_connection.results = populate_results(fedora_connection)
-echo fedora_connection.results
+let test = harvest_metadata("MODS", fedora_connection)
