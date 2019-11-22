@@ -7,7 +7,9 @@ type
     results*: seq[string]
     token*: string
 
-proc add_pids_to_results(response: string): seq[string] =
+var client = newHttpClient()
+
+proc grab_pids(response: string): seq[string] =
   var pids: seq[string] = @[]
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "pid")
@@ -20,10 +22,26 @@ proc add_pids_to_results(response: string): seq[string] =
 proc get_token(response: string): string =
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "token")
-  return results
+  var token: string = ""
+  if results.len > 0:
+    token = results.replace("<token>", "").replace("</token>", "")
+  return token
 
-var client = newHttpClient()
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml", response: client.getContent("http://localhost:8080/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml"))
+proc populate_results(connection: FedoraConnection): seq[string] =
+  var pids: seq[string] = @[]
+  var new_pids: seq[string] = @[]
+  var token: string = "temporary"
+  var url: string = connection.base_url & "/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml&maxResults=2"
+  var response: string = ""
+  while token.len > 0:
+    response = client.getContent(url)
+    new_pids = grab_pids(response)
+    for pid in new_pids:
+      pids.add(pid)
+    token = get_token(response)
+    url = url & "&sessionToken=" & token
+  return pids  
 
-fedora_connection.results = add_pids_to_results(fedora_connection.response)
-fedora_connection.token = get_token(fedora_connection.response)
+var fedora_connection: FedoraConnection = FedoraConnection(base_url:"http://localhost:8080", token: "temporary", response: client.getContent("http://localhost:8080/fedora/objects?query=pid%7Etest*&pid=true&resultFormat=xml"))
+fedora_connection.results = populate_results(fedora_connection)
+echo fedora_connection.results
