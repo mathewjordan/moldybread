@@ -80,12 +80,14 @@ proc read_yaml_config(file_path: string): ConfigSettings =
   file_stream.close()
   return config_settings
 
-var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
-var fedora_connection: FedoraConnection = FedoraConnection(base_url:yaml_settings.base_url,
- query: "test", 
- max_results: yaml_settings.max_results,
- output_directory: yaml_settings.output_directory,
- authentication: (yaml_settings.username, yaml_settings.password)
- )
-fedora_connection.results = populate_results(fedora_connection)
-let test = harvest_metadata("MODS", fedora_connection)
+when isMainModule:
+  var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
+  var fedora_connection: FedoraConnection = FedoraConnection(base_url:yaml_settings.base_url,
+  query: "test", 
+  max_results: yaml_settings.max_results,
+  output_directory: yaml_settings.output_directory,
+  authentication: (yaml_settings.username, yaml_settings.password)
+  )
+  fedora_connection.results = populate_results(fedora_connection)
+  let test = harvest_metadata("MODS", fedora_connection)
+  echo test.successes
