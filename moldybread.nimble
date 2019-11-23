@@ -12,3 +12,4 @@ srcDir        = "src"
 
 requires "nim >= 1.0.2"
 requires "xmltools >= 0.1.5"
+requires "yaml >= 0.12.0"
