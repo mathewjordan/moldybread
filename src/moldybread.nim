@@ -24,22 +24,18 @@ type
 var client = newHttpClient()
 
 proc grab_pids*(response: string): seq[string] =
-  var pids: seq[string] = @[]
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "pid")
   for word in split(results, '<'):
     let new_word = word.replace("/", "").replace("pid>", "")
     if len(new_word) > 0:
-      pids.add(new_word)
-  return pids
+      result.add(new_word)
 
 proc get_token*(response: string): string =
   let xml_response = Node.fromStringE(response)
   let results = $(xml_response // "token")
-  var token: string = ""
   if results.len > 0:
-    token = results.replace("<token>", "").replace("</token>", "")
-  return token
+    result = results.replace("<token>", "").replace("</token>", "")
   
 proc harvest_metadata(datastream_id: string, connection: FedoraConnection): Message =
   var url: string
@@ -55,11 +51,9 @@ proc harvest_metadata(datastream_id: string, connection: FedoraConnection): Mess
       errors.add(pid)
     attempts += 1
   attempts = attempts
-  let message: Message = Message(errors: errors, successes: successes, attempts: attempts)
-  return message
+  result = Message(errors: errors, successes: successes, attempts: attempts)
 
 proc populate_results(connection: FedoraConnection): seq[string] =
-  var pids: seq[string] = @[]
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
   var url: string = connection.base_url & "/fedora/objects?query=pid%7E" & connection.query & "*&pid=true&resultFormat=xml&maxResults=" & $connection.max_results
@@ -68,17 +62,14 @@ proc populate_results(connection: FedoraConnection): seq[string] =
     response = client.getContent(url)
     new_pids = grab_pids(response)
     for pid in new_pids:
-      pids.add(pid)
+      result.add(pid)
     token = get_token(response)
     url = connection.base_url & "/fedora/objects?query=pid%7E" & connection.query & "*&pid=true&resultFormat=xml&maxResults=" & $connection.max_results & "&sessionToken=" & token
-  return pids  
 
 proc read_yaml_config(file_path: string): ConfigSettings =
-  var config_settings: ConfigSettings
   var file_stream = newFileStream(file_path)
-  load(file_stream, config_settings)
+  load(file_stream, result)
   file_stream.close()
-  return config_settings
 
 when isMainModule:
   var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
