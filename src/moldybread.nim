@@ -36,7 +36,12 @@ proc get_token*(response: string): string =
   let results = $(xml_response // "token")
   if results.len > 0:
     result = results.replace("<token>", "").replace("</token>", "")
-  
+
+proc write_output(filename: string, contents: string, destination_directory: string): string =
+  let path = destination_directory & "/" & filename
+  writeFile(path, contents)
+  result = "Created " & filename & " at " & destination_directory
+
 proc harvest_metadata(datastream_id: string, connection: FedoraConnection): Message =
   var url: string
   var successes, errors: seq[string]
@@ -47,6 +52,7 @@ proc harvest_metadata(datastream_id: string, connection: FedoraConnection): Mess
     var response = client.request(url, httpMethod = HttpGet)
     if response.status == "200 OK":
       successes.add(pid)
+      discard write_output(pid, response.body, connection.output_directory)
     else:
       errors.add(pid)
     attempts += 1
