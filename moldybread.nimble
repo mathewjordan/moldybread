@@ -5,7 +5,8 @@ author        = "Mark Baggett"
 description   = "A Fedora 3.8 client in nim"
 license       = "GPL-3.0"
 srcDir        = "src"
-
+installExt    = @["nim"]
+bin           = @["moldybread"]
 
 
 # Dependencies
