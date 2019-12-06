@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64
+import httpclient, strformat, xmltools, strutils, base64, progress
 
 type
   FedoraRequest* = ref object
@@ -18,7 +18,7 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("admin", "adm
   ## Initializes new Fedora Request.
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
-  FedoraRequest(base_url: url, authentication: auth, client: client, max_results: 2, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
+  FedoraRequest(base_url: url, authentication: auth, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
 
 method grab_pids(this: FedoraRequest, response: string): seq[string] {. base .} =
   let xml_response = Node.fromStringE(response)
@@ -33,6 +33,14 @@ method get_token(this: FedoraRequest, response: string): string {. base .} =
   let results = $(xml_response // "token")
   if results.len > 0:
     result = results.replace("<token>", "").replace("</token>", "")
+
+method get_cursor(this: FedoraRequest, response: string): string {. base .} =
+  let xml_response = Node.fromStringE(response)
+  let results = $(xml_response // "cursor")
+  if results.len > 0:
+    result = results.replace("<cursor>", "").replace("</cursor>", "")
+  else:
+    result = "No cursor"
 
 method write_output(this: FedoraRequest, filename: string, contents: string): string {. base .} =
   let path = fmt"{this.output_directory}/{filename}"
@@ -56,6 +64,8 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   var url: string
   var successes, errors: seq[string]
   var attempts: int
+  var bar = newProgressBar(total= len(this.results))
+  bar.start()
   for pid in this.results:
     url = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content"
     var response = this.client.request(url, httpMethod = HttpGet)
@@ -65,6 +75,8 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
     else:
       errors.add(pid)
     attempts += 1
+    bar.increment()
   attempts = attempts
+  bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
