@@ -89,9 +89,11 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   var url: string
   var successes, errors: seq[string]
   var attempts: int
-  var bar = newProgressBar(total= len(this.results))
+  var bar = newProgressBar()
   bar.start()
-  for pid in this.results:
+  var pid = ""
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
     url = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content"
     var response = this.client.request(url, httpMethod = HttpGet)
     if response.status == "200 OK":
@@ -104,4 +106,3 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   attempts = attempts
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
-
