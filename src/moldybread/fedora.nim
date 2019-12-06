@@ -2,6 +2,7 @@ import httpclient, strformat, xmltools, strutils, base64, progress
 
 type
   FedoraRequest* = ref object
+    ## Type to Handle Fedora requests
     base_url*: string
     results*: seq[string]
     client: HttpClient
@@ -10,12 +11,19 @@ type
     authentication: (string, string)
 
   Message* = ref object
+    ## Type to handle messaging
     errors*: seq[string]
     successes*: seq[string]
     attempts*: int
 
 proc initFedoraRequest*(url: string="http://localhost:8080", auth=("admin", "admin")): FedoraRequest =
   ## Initializes new Fedora Request.
+  ##
+  ## Examples:
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest()
+  ##
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
   FedoraRequest(base_url: url, authentication: auth, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
@@ -48,6 +56,14 @@ method write_output(this: FedoraRequest, filename: string, contents: string): st
   fmt"Creatred {filename} at {this.output_directory}."
 
 method populate_results*(this: FedoraRequest, query: string): seq[string] {. base .} =
+  ## Populates results for a Fedora request.
+  ##
+  ## Examples:
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest()
+  ##    echo fedora_connection.populate_results()
+  ##
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
   var request: string = fmt"{this.base_url}/fedora/objects?query=pid%7E{query}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
@@ -61,6 +77,15 @@ method populate_results*(this: FedoraRequest, query: string): seq[string] {. bas
     request = fmt"{this.base_url}/fedora/objects?query=pid%7E{query}*&pid=true&resultFormat=xml&maxResults={this.max_results}&sessionToken={token}"
 
 method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
+  ## Populates results for a Fedora request.
+  ##
+  ## Examples:
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest()
+  ##    fedora_connection.populate_results()
+  ##    fedora_connection.harvest_metadata("DC")
+  ##
   var url: string
   var successes, errors: seq[string]
   var attempts: int
