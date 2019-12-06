@@ -57,9 +57,7 @@ method get_cursor(this: FedoraRequest, response: string): string {. base .} =
 
 method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .} =
   case $header["content-type"]
-  of "application/xml":
-    ".xml"
-  of "text/xml":
+  of "application/xml", "text/xml":
     ".xml"
   else:
     ".bin"
