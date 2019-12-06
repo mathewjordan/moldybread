@@ -50,6 +50,13 @@ method get_cursor(this: FedoraRequest, response: string): string {. base .} =
   else:
     result = "No cursor"
 
+method get_extension(this: FedoraRequest, header: HttpHeaders): string {. base .} =
+  case $header["content-type"]
+  of "application/xml":
+    ".xml"
+  else:
+    ".bin"
+
 method write_output(this: FedoraRequest, filename: string, contents: string): string {. base .} =
   let path = fmt"{this.output_directory}/{filename}"
   writeFile(path, contents)
@@ -96,9 +103,10 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
     pid = this.results[i-1]
     url = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content"
     var response = this.client.request(url, httpMethod = HttpGet)
+    var extension = this.get_extension(response.headers)
     if response.status == "200 OK":
       successes.add(pid)
-      discard this.write_output(pid, response.body)
+      discard this.write_output(fmt"{pid}{extension}", response.body)
     else:
       errors.add(pid)
     attempts += 1
