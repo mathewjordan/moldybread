@@ -16,6 +16,12 @@ type
     successes*: seq[string]
     attempts*: int
 
+  FedoraRecord = object
+    ## Type to handle Fedora Records
+    client: HttpClient
+    uri: string
+    pid: string
+
 proc initFedoraRequest*(url: string="http://localhost:8080", auth=("admin", "admin")): FedoraRequest =
   ## Initializes new Fedora Request.
   ##
@@ -50,17 +56,28 @@ method get_cursor(this: FedoraRequest, response: string): string {. base .} =
   else:
     result = "No cursor"
 
-method get_extension(this: FedoraRequest, header: HttpHeaders): string {. base .} =
+method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .} =
   case $header["content-type"]
   of "application/xml":
+    ".xml"
+  of "text/xml":
     ".xml"
   else:
     ".bin"
 
-method write_output(this: FedoraRequest, filename: string, contents: string): string {. base .} =
-  let path = fmt"{this.output_directory}/{filename}"
+method write_output(this: FedoraRecord, filename: string, contents: string, output_directory: string): string {. base .} =
+  let path = fmt"{output_directory}/{filename}"
   writeFile(path, contents)
-  fmt"Creatred {filename} at {this.output_directory}."
+  fmt"Created {filename} at {output_directory}."
+
+method get(this: FedoraRecord, output_directory: string): bool {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    let extension = this.get_extension(response.headers)
+    discard this.write_output(fmt"{this.pid}{extension}", response.body, output_directory)
+    true
+  else:
+    false
 
 method populate_results*(this: FedoraRequest, query: string): seq[string] {. base .} =
   ## Populates results for a Fedora request.
@@ -93,20 +110,17 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ##    fedora_connection.populate_results()
   ##    fedora_connection.harvest_metadata("DC")
   ##
-  var url: string
+  var url, pid: string
   var successes, errors: seq[string]
   var attempts: int
   var bar = newProgressBar()
   bar.start()
-  var pid = ""
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    url = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content"
-    var response = this.client.request(url, httpMethod = HttpGet)
-    var extension = this.get_extension(response.headers)
-    if response.status == "200 OK":
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
+    let response = new_record.get(this.output_directory)
+    if response:
       successes.add(pid)
-      discard this.write_output(fmt"{pid}{extension}", response.body)
     else:
       errors.add(pid)
     attempts += 1
