@@ -8,7 +8,6 @@ type
     client: HttpClient
     max_results*: int
     output_directory: string
-    authentication: (string, string)
 
   Message* = ref object
     ## Type to handle messaging
@@ -32,7 +31,7 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("admin", "adm
   ##
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
-  FedoraRequest(base_url: url, authentication: auth, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
+  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
 
 method grab_pids(this: FedoraRequest, response: string): seq[string] {. base .} =
   let xml_response = Node.fromStringE(response)
