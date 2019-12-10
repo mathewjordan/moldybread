@@ -14,5 +14,5 @@ bin           = @["moldybread"]
 requires "nim >= 1.0.2"
 requires "xmltools >= 0.1.5"
 requires "yaml >= 0.12.0"
-requires "argpase >= 0.10.0"
+requires "argparse >= 0.10.0"
 requires "progress >=  1.1.1"
