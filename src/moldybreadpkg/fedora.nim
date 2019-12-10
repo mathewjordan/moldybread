@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress
+import httpclient, strformat, xmltools, strutils, base64, progress, os, typetraits
 
 type
   FedoraRequest* = ref object
@@ -21,7 +21,18 @@ type
     uri: string
     pid: string
 
-proc initFedoraRequest*(url: string="http://localhost:8080", auth=("admin", "admin")): FedoraRequest =
+proc get_path_with_pid(path, extension: string): seq[(string, string)] =
+  var parts_of_path: seq[string]
+  var pid: string
+  for kind, path in walkDir(path):
+    if kind == pcFile and path.contains(":"):
+      parts_of_path = path.split("/")
+      for value in parts_of_path:
+        if value.contains(":"):
+          pid = value.replace(extension, "")
+      result.add((path, pid))
+
+proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): FedoraRequest =
   ## Initializes new Fedora Request.
   ##
   ## Examples:
@@ -75,6 +86,22 @@ method get(this: FedoraRecord, output_directory: string): bool {. base .} =
     true
   else:
     false
+  
+method modify_datastream(this: FedoraRecord, multipart_path: string): bool {. base .} =
+  var data = newMultipartData()
+  let entireFile = readFile(multipart_path)
+  #data["uploaded_file"] = (multipart_path, "application/xml", entireFile)
+  #data["output"] = "soap12"
+  data["text"] = entireFile
+  data["expire"] = "1m"
+  data["lang"] = "text"
+  #let response = this.client.request(this.uri, httpMethod = HttpPut)
+  let response = this.client.putContent(this.uri, multipart=data)
+  # if response.status == "200 OK":
+  #   true
+  # else:
+  #   false
+  true
 
 method populate_results*(this: FedoraRequest, query: string): seq[string] {. base .} =
   ## Populates results for a Fedora request.
@@ -83,7 +110,7 @@ method populate_results*(this: FedoraRequest, query: string): seq[string] {. bas
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
-  ##    echo fedora_connection.populate_results()
+  ##    echo fedora_connection.populate_results("test")
   ##
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
@@ -104,10 +131,10 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
-  ##    fedora_connection.populate_results()
+  ##    fedora_connection.results = fedora_connection.populate_results("test")
   ##    fedora_connection.harvest_metadata("DC")
   ##
-  var url, pid: string
+  var pid: string
   var successes, errors: seq[string]
   var attempts: int
   var bar = newProgressBar()
@@ -125,3 +152,24 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   attempts = attempts
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method update_metadata*(this: FedoraRequest, datastream_id: string, directory: string): Message {. base .} =
+  var pid: string
+  var successes, errors: seq[string]
+  var pids_to_update: seq[(string, string)]
+  var attempts: int
+  pids_to_update = get_path_with_pid(directory, ".xml")
+  for pid in pids_to_update:
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
+    let response = new_record.modify_datastream(pid[0])
+    if response:
+      successes.add(pid[1])
+    else:
+      errors.add(pid[1])
+    attempts += 1
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+when isMainModule:
+  let fedora_connection = initFedoraRequest()
+  fedora_connection.results = fedora_connection.populate_results("test")
+  echo fedora_connection.update_metadata("MODS", "/home/mark/nim_projects/moldybread/experiment").successes
