@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybread/fedora, argparse
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse
 
 type
   ConfigSettings = object
