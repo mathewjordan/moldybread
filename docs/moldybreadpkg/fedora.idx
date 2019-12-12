@@ -1,0 +1,6 @@
+FedoraRequest	moldybreadpkg/fedora.html#FedoraRequest	fedora: FedoraRequest	
+Message	moldybreadpkg/fedora.html#Message	fedora: Message	
+initFedoraRequest	moldybreadpkg/fedora.html#initFedoraRequest,string,tuple of (string, string)	fedora: initFedoraRequest(url: string = &quot;http://localhost:8080&quot;;\n                  auth = (&quot;fedoraAdmin&quot;, &quot;fedoraAdmin&quot;)): FedoraRequest	
+populate_results	moldybreadpkg/fedora.html#populate_results.e,FedoraRequest,string	fedora: populate_results(this: FedoraRequest; query: string): seq[string]	
+harvest_metadata	moldybreadpkg/fedora.html#harvest_metadata.e,FedoraRequest,string	fedora: harvest_metadata(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
+update_metadata	moldybreadpkg/fedora.html#update_metadata.e,FedoraRequest,string,string,	fedora: update_metadata(this: FedoraRequest; datastream_id: string; directory: string;\n                gsearch_auth: (string, string)): Message	
