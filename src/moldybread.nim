@@ -2,6 +2,7 @@ import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, ar
 
 type
   ConfigSettings = object
+    ## Type to represent settings defined in config.yml
     username: string
     password: string
     base_url: string
@@ -11,11 +12,57 @@ type
     gsearch_password: string
 
 proc read_yaml_config(file_path: string): ConfigSettings =
+  ## Procedure to read in a yml file and populate a ConfigSettings variable based on it.
+  ##
+  ## Example:
+  ## .. code-block:: nim
+  ##
+  ##    var yaml_settings = read_yaml_config("/home/harrison/nim_projects/moldybread/config/config.yml")
+  ##
   var file_stream = newFileStream(file_path)
   load(file_stream, result)
   file_stream.close()
 
 when isMainModule:
+  ## This package allows users to interact with a Fedora 3.8 repository via the CLI.
+  ## 
+  ##
+  ## Defining a config.yml
+  ## =====================
+  ## 
+  ## Make a copy of default_config.yml as config.yml and set settings appropriately.
+  ## Currently, this is the only way to pass authentication information for Fedora.
+  ##
+  ##
+  ## Command Line Parsing
+  ## ====================
+  ##
+  ## When in doubt, use help:
+  ## 
+  ## .. code-block:: sh
+  ## 
+  ##    ./moldybread -h
+  ##
+  ## Harvest Metadata
+  ## ================
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    ./moldybread -o harvest_metadata -d MODS -n test
+  ##
+  ## Update Metadata
+  ## ===============
+  ##
+  ## You can update metadata from a directory. The files must end in .xml and be named according to a PID (i.e. test:1.xml).
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    ./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS
+  ##
+  ## If your request was successful, you should see a list of PIDS that were successfully updated.
+  ##
+  ## **NOTE**: This operation automatically updates SOLR with Gsearch.
+  ##
   var p = newParser("Moldybread"):
     help("Like whitebread but written in nim.")
     option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata"])
