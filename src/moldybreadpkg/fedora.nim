@@ -41,6 +41,7 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin"
   ## Initializes new Fedora Request.
   ##
   ## Examples:
+  ##
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
@@ -123,6 +124,7 @@ method populate_results*(this: FedoraRequest, query: string): seq[string] {. bas
   ## Populates results for a Fedora request.
   ##
   ## Examples:
+  ##
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
@@ -144,6 +146,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ## Populates results for a Fedora request.
   ##
   ## Examples:
+  ##
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
@@ -176,6 +179,7 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   ## PIDs and end with a .xml extension (i.e test:1.xml).
   ##
   ## Examples:
+  ##
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest()
