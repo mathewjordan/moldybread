@@ -55,6 +55,17 @@ when isMainModule:
   ##
   ## You can update metadata from a directory. The files must end in .xml and be named according to a PID (i.e. test:1.xml).
   ##
+  ## Example layout:
+  ##
+  ## .. code-block:: sh
+  ## 
+  ##    |-- updates
+  ##        |-- test:1.xml
+  ##        |-- test:2.xml
+  ##        |-- test:3.xml
+  ##
+  ## Example command:
+  ##
   ## .. code-block:: sh
   ##
   ##    ./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS
