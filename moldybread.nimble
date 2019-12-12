@@ -16,3 +16,9 @@ requires "xmltools >= 0.1.5"
 requires "yaml >= 0.12.0"
 requires "argparse >= 0.10.0"
 requires "progress >=  1.1.1"
+
+# Documentation
+
+task docs, "Docs":
+  exec "nim doc -o=docs --project --index:on --git.url:https://github.com/markpbaggett/moldybread src/moldybread.nim"
+  exec "nim buildIndex -o:docs/theindex.html docs"
