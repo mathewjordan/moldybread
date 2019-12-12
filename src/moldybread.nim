@@ -93,7 +93,7 @@ when isMainModule:
   block main_control:
     try:
       var yaml_settings = read_yaml_config(opts.yaml_path)
-      let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password))
+      let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password), yaml_settings.directory_path)
       case opts.operation
       of "harvest_metadata":
         if opts.namespaceorpid != "":

@@ -2,6 +2,6 @@ username: fedoraAdmin
 password: fedoraAdmin
 base_url: http://localhost:8080
 max_results: 2
-directory_path: output
+directory_path: /full/path/to/my/output/directory
 gsearch_username: fedoraAdmin
 gsearch_password: fedoraAdmin

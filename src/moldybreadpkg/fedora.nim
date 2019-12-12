@@ -9,7 +9,7 @@ type
     max_results*: int
     output_directory: string
 
-  Message* = ref object
+  Message = ref object
     ## Type to handle messaging
     errors*: seq[string]
     successes*: seq[string]
@@ -37,7 +37,7 @@ proc get_path_with_pid(path, extension: string): seq[(string, string)] =
           pid = value.replace(extension, "")
       result.add((path, pid))
 
-proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): FedoraRequest =
+proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory=""): FedoraRequest =
   ## Initializes new Fedora Request.
   ##
   ## Examples:
@@ -48,7 +48,7 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin"
   ##
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
-  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
+  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: output_directory)
 
 proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): GsearchConnection =
   let client = newHttpClient()
@@ -85,6 +85,8 @@ method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .}
     ".bin"
 
 method write_output(this: FedoraRecord, filename: string, contents: string, output_directory: string): string {. base .} =
+  if not existsDir(output_directory):
+    createDir(output_directory)
   let path = fmt"{output_directory}/{filename}"
   writeFile(path, contents)
   fmt"Created {filename} at {output_directory}."
