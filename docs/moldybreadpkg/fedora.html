@@ -918,9 +918,8 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 <p>Initializes new Fedora Request.</p>
-<p>Examples: .. code-block:: nim</p>
-<blockquote><p>let fedora_connection = initFedoraRequest()</p></blockquote>
-
+<p>Examples:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
 href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L40"
 class="link-seesrc" target="_blank">Source</a>
@@ -940,13 +939,13 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 <p>Populates results for a Fedora request.</p>
-<p>Examples: .. code-block:: nim</p>
-<blockquote><p>let fedora_connection = initFedoraRequest() echo fedora_connection.populate_results(&quot;test&quot;)</p></blockquote>
-
+<p>Examples:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L122"
+href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L123"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L122" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L123" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="harvest_metadata.e,FedoraRequest,string"></a>
@@ -957,13 +956,14 @@ class="link-seesrc" target="_blank">Source</a>
 <dd>
 
 <p>Populates results for a Fedora request.</p>
-<p>Examples: .. code-block:: nim</p>
-<blockquote><p>let fedora_connection = initFedoraRequest() fedora_connection.results = fedora_connection.populate_results(&quot;test&quot;) fedora_connection.harvest_metadata(&quot;DC&quot;)</p></blockquote>
-
+<p>Examples:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_metadata</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L143"
+href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L145"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L143" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L145" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="update_metadata.e,FedoraRequest,string,string,"></a>
@@ -976,13 +976,13 @@ class="link-seesrc" target="_blank">Source</a>
 
 <p>Updates metadata records based on files in a directory.</p>
 <p>This method requires a datastream_id and a directory (use full paths for now). Files must follow the same naming convention as their PIDs and end with a .xml extension (i.e test:1.xml).</p>
-<p>Examples: .. code-block:: nim</p>
-<blockquote><p>let fedora_connection = initFedoraRequest() discard fedora_connection.update_metadata(&quot;MODS&quot;, &quot;/home/mark/nim_projects/moldybread/experiment&quot;)</p></blockquote>
-
+<p>Examples:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">update_metadata</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;/home/mark/nim_projects/moldybread/experiment&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L172"
+href="https://github.com/markpbaggett/moldybread/tree/version-1-0/src/moldybreadpkg/fedora.nim#L175"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L172" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L175" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -995,7 +995,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-12 16:41:23 UTC</small>
+        <small>Made with Nim. Generated: 2019-12-12 20:28:22 UTC</small>
       </div>
     </div>
   </div>

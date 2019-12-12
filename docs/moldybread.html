@@ -16,7 +16,7 @@
 <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
 
 <!-- CSS -->
-<title>moldybread</title>
+<title>MOLDY BREAD</title>
 <style type="text/css" >
 /*
 Stylesheet for use with Docutils/rst2html.
@@ -804,7 +804,7 @@ function main() {
 <body onload="main()">
 <div class="document" id="documentId">
   <div class="container">
-    <h1 class="title">moldybread</h1>
+    <h1 class="title">MOLDY BREAD</h1>
     <div class="row">
   <div class="three columns">
   <div id="global-links">
@@ -840,14 +840,16 @@ function main() {
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
   
-  <p class="module-desc">This package allows users to interact with a Fedora 3.8 repository via the CLI.
+  <p class="module-desc"><p>This package allows users to interact with a Fedora 3.8 repository via the CLI.</p>
+<p>The instructions here assume you are working with a compiled version of Moldy Bread. See installation instructions or package info if you are looking for something else.</p>
+
 <h1><a class="toc-backref" id="defining-a-configdotyml" href="#defining-a-configdotyml">Defining a config.yml</a></h1><p>Make a copy of default_config.yml as config.yml and set settings appropriately. Currently, this is the only way to pass authentication information for Fedora.</p>
 
 <h1><a class="toc-backref" id="command-line-parsing" href="#command-line-parsing">Command Line Parsing</a></h1><p>When in doubt, use help:</p>
 <pre class="listing">
 ./moldybread -h</pre>
 <h1><a class="toc-backref" id="harvest-metadata" href="#harvest-metadata">Harvest Metadata</a></h1><pre class="listing">
-./moldybread -o harvest_metadata -d MODS -n test</pre>
+./moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file</pre>
 <h1><a class="toc-backref" id="update-metadata" href="#update-metadata">Update Metadata</a></h1><p>You can update metadata from a directory. The files must end in .xml and be named according to a PID (i.e. test:1.xml).</p>
 <p>Example layout:</p>
 <pre class="listing">
@@ -856,7 +858,7 @@ function main() {
     |-- test:2.xml
     |-- test:3.xml</pre><p>Example command:</p>
 <pre class="listing">
-./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS</pre><p>If your request was successful, you should see a list of PIDS that were successfully updated.</p>
+./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file</pre><p>If your request was successful, you should see a list of PIDS that were successfully updated.</p>
 <p><strong>NOTE</strong>: This operation automatically updates SOLR with Gsearch. </p>
 </p>
   <div class="section" id="6">
@@ -872,7 +874,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-12 16:41:24 UTC</small>
+        <small>Made with Nim. Generated: 2019-12-12 20:28:22 UTC</small>
       </div>
     </div>
   </div>
