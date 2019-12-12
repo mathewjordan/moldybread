@@ -2,4 +2,4 @@ username: fedoraAdmin
 password: fedoraAdmin
 base_url: http://localhost:8080
 max_results: 2
-output_directory: output
+directory_path: output

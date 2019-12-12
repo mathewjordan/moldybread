@@ -6,7 +6,7 @@ type
     password: string
     base_url: string
     max_results: int
-    output_directory: string
+    directory_path: string
 
 proc read_yaml_config(file_path: string): ConfigSettings =
   var file_stream = newFileStream(file_path)
@@ -16,12 +16,13 @@ proc read_yaml_config(file_path: string): ConfigSettings =
 when isMainModule:
   var p = newParser("Moldybread"):
     help("Like whitebread but written in nim.")
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Specify containing namespace or PID.", default="")
+    option("-p", "--path", help="Specify a directory path.", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
-  var yaml_settings = read_yaml_config("/home/mark/nim_projects/moldybread/config/config.yml")
+  var yaml_settings = read_yaml_config("/home/harrison/nim_projects/moldybread/config/config.yml")
   let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password))
   case opts.operation
   of "harvest_metadata":
@@ -31,5 +32,10 @@ when isMainModule:
       echo test.successes
     else:
       echo "Must specify a containing namespace or pid."
+  of "update_metadata":
+    if opts.path != "":
+      yaml_settings.directory_path = opts.path
+    let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path)
+    echo operation.successes
   else:
     echo "No matching operation."
