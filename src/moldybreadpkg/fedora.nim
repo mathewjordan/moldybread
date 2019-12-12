@@ -20,6 +20,11 @@ type
     client: HttpClient
     uri: string
     pid: string
+  
+  GsearchConnection = object
+    ## Type to handle Gsearch connections
+    client: HttpClient
+    base_url: string
 
 proc get_path_with_pid(path, extension: string): seq[(string, string)] =
   var parts_of_path: seq[string]
@@ -43,6 +48,11 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin"
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
   FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: "/home/mark/nim_projects/moldybread/sample_output")
+
+proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): GsearchConnection =
+  let client = newHttpClient()
+  client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
+  GsearchConnection(client: client, base_url: url)
 
 method grab_pids(this: FedoraRequest, response: string): seq[string] {. base .} =
   let xml_response = Node.fromStringE(response)
@@ -100,6 +110,15 @@ method modify_metadata_datastream(this: FedoraRecord, multipart_path: string): b
   except HttpRequestError:
     false
 
+method update_solr_record(this: GsearchConnection, pid: string): bool {. base .} =
+  let request = this.client.request(fmt"{this.base_url}/fedoragsearch/rest?operation=updateIndex&action=fromPid&value={pid}", httpMethod=HttpPost)
+  if request.status == "200 OK":
+    # echo fmt"Successfully updated Solr Record for {pid}."
+    true
+  else:
+    # echo fmt"{request.status}: PID {pid} failed."
+    false
+
 method populate_results*(this: FedoraRequest, query: string): seq[string] {. base .} =
   ## Populates results for a Fedora request.
   ##
@@ -150,7 +169,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
-method update_metadata*(this: FedoraRequest, datastream_id: string, directory: string): Message {. base .} =
+method update_metadata*(this: FedoraRequest, datastream_id: string, directory: string, gsearch_auth: (string, string)): Message {. base .} =
   ## Updates metadata records based on files in a directory.
   ##
   ## This method requires a datastream_id and a directory (use full paths for now). Files must follow the same naming convention as their
@@ -165,12 +184,14 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   var successes, errors: seq[string]
   var pids_to_update: seq[(string, string)]
   var attempts: int
+  let gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
   pids_to_update = get_path_with_pid(directory, ".xml")
   for pid in pids_to_update:
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
     let response = new_record.modify_metadata_datastream(pid[0])
     if response:
       successes.add(pid[1])
+      discard gsearch_connection.update_solr_record(pid[1])
     else:
       errors.add(pid[1])
     attempts += 1

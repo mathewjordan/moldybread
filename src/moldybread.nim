@@ -7,6 +7,8 @@ type
     base_url: string
     max_results: int
     directory_path: string
+    gsearch_username: string
+    gsearch_password: string
 
 proc read_yaml_config(file_path: string): ConfigSettings =
   var file_stream = newFileStream(file_path)
@@ -35,7 +37,7 @@ when isMainModule:
   of "update_metadata":
     if opts.path != "":
       yaml_settings.directory_path = opts.path
-    let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path)
+    let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
     echo operation.successes
   else:
     echo "No matching operation."
