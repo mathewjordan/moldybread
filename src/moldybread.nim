@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat
 
 type
   ConfigSettings = object
@@ -24,8 +24,15 @@ proc read_yaml_config(file_path: string): ConfigSettings =
   file_stream.close()
 
 when isMainModule:
-  ## This package allows users to interact with a Fedora 3.8 repository via the CLI.
   ## 
+  ## ===========
+  ## MOLDY BREAD
+  ## ===========
+  ##
+  ## This package allows users to interact with a Fedora 3.8 repository via the CLI.
+  ##
+  ## The instructions here assume you are working with a compiled version of Moldy Bread. See installation instructions or package info if you are looking for
+  ## something else.
   ##
   ## Defining a config.yml
   ## =====================
@@ -48,7 +55,7 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    ./moldybread -o harvest_metadata -d MODS -n test
+  ##    ./moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file
   ##
   ## Update Metadata
   ## ===============
@@ -68,7 +75,7 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    ./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS
+  ##    ./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file
   ##
   ## If your request was successful, you should see a list of PIDS that were successfully updated.
   ##
@@ -80,22 +87,28 @@ when isMainModule:
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Specify containing namespace or PID.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
+    option("-y", "--yaml_path", help="Specify path to config.yml", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
-  var yaml_settings = read_yaml_config("/home/harrison/nim_projects/moldybread/config/config.yml")
-  let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password))
-  case opts.operation
-  of "harvest_metadata":
-    if opts.namespaceorpid != "":
-      fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
-      let test = fedora_connection.harvest_metadata(opts.dsid)
-      echo test.successes
-    else:
-      echo "Must specify a containing namespace or pid."
-  of "update_metadata":
-    if opts.path != "":
-      yaml_settings.directory_path = opts.path
-    let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
-    echo operation.successes
-  else:
-    echo "No matching operation."
+  block main_control:
+    try:
+      var yaml_settings = read_yaml_config(opts.yaml_path)
+      let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password))
+      case opts.operation
+      of "harvest_metadata":
+        if opts.namespaceorpid != "":
+          fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
+          let test = fedora_connection.harvest_metadata(opts.dsid)
+          echo test.successes
+        else:
+          echo "Must specify a containing namespace or pid."
+      of "update_metadata":
+        if opts.path != "":
+          yaml_settings.directory_path = opts.path
+        let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
+        echo operation.successes
+      else:
+        echo "No matching operation."
+    except:
+      echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use th full path for now until I figure out how relative pathing works."
+      break
