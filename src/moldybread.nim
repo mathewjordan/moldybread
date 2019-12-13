@@ -134,7 +134,8 @@ when isMainModule:
         auth=(yaml_settings.username, yaml_settings.password), 
         output_directory=yaml_settings.directory_path, 
         pid_part=opts.namespaceorpid,
-        dc_values=opts.dcsearch)
+        dc_values=opts.dcsearch,
+        max_results=yaml_settings.max_results)
       case opts.operation
       of "harvest_metadata":
         if opts.namespaceorpid == "" and opts.dcsearch == "":

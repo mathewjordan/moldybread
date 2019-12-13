@@ -47,7 +47,7 @@ proc convert_dc_pairs_to_string(dc_pairs: string): string =
     new_list.add(fmt"{separated_values[0]}%7E{separated_values[1]}")
   join(new_list, "%20")
 
-proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory, dc_values, pid_part=""): FedoraRequest =
+proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory, dc_values, pid_part="", max_results=100): FedoraRequest =
   ## Initializes new Fedora Request.
   ##
   ## Example with namespace / pid_part:
@@ -64,7 +64,7 @@ proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin"
   ##
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
-  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: output_directory, dc_values: dc_values, pid_part: pid_part)
+  FedoraRequest(base_url: url, client: client, output_directory: output_directory, dc_values: dc_values, pid_part: pid_part, max_results: max_results)
 
 proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): GsearchConnection =
   let client = newHttpClient()
