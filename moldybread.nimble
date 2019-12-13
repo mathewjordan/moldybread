@@ -20,5 +20,5 @@ requires "progress >=  1.1.1"
 # Documentation
 
 task docs, "Docs":
-  exec "nim doc -o=docs --project --index:on --git.url:https://github.com/markpbaggett/moldybread src/moldybread.nim"
+  exec "nim doc -o=docs --project --index:on --git.url:https://github.com/markpbaggett/moldybread --git.commit:$(git rev-parse HEAD) src/moldybread.nim"
   exec "nim buildIndex -o:docs/theindex.html docs"
