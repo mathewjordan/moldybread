@@ -170,7 +170,6 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
       errors.add(pid)
     attempts += 1
     bar.increment()
-  attempts = attempts
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -200,5 +199,30 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
       discard gsearch_connection.update_solr_record(pid[1])
     else:
       errors.add(pid[1])
+    attempts += 1
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method download_foxml*(this: FedoraRequest): Message {. base .} =
+  ## Downloads the FOXML record for each object in a results set.
+  ##
+  ## This method downloads the foxml record for all matching objects.
+  ##
+  ## Example:
+  ## 
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/harrison/nim_projects/moldybread/output")
+  ##    fedora_connection.results = fedora_connection.populate_results("test")
+  ##    discard fedora_connection.download_foxml().successes
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  for pid in this.results:
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
+    let response = new_record.get(this.output_directory)
+    if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
     attempts += 1
   Message(errors: errors, successes: successes, attempts: attempts)

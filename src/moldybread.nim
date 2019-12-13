@@ -48,14 +48,25 @@ when isMainModule:
   ## 
   ## .. code-block:: sh
   ## 
-  ##    ./moldybread -h
+  ##    moldybread -h
   ##
   ## Harvest Metadata
   ## ================
   ##
+  ## Metadata can be harvested by supplying a datastream id (MODS by default) and a namespace.
+  ##
   ## .. code-block:: sh
   ##
-  ##    ./moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file
+  ##    moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file
+  ##
+  ## Download FOXML Record
+  ## =====================
+  ##
+  ## FOXML records can be downloaded by supplying a namespace.
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file
   ##
   ## Update Metadata
   ## ===============
@@ -83,7 +94,7 @@ when isMainModule:
   ##
   var p = newParser("Moldybread"):
     help("Like whitebread but written in nim.")
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata", "download_foxml"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Specify containing namespace or PID.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
@@ -99,6 +110,13 @@ when isMainModule:
         if opts.namespaceorpid != "":
           fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
           let test = fedora_connection.harvest_metadata(opts.dsid)
+          echo test.successes
+        else:
+          echo "Must specify a containing namespace or pid."
+      of "download_foxml":
+        if opts.namespaceorpid != "":
+          fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
+          let test = fedora_connection.download_foxml()
           echo test.successes
         else:
           echo "Must specify a containing namespace or pid."
