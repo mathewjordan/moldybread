@@ -50,6 +50,24 @@ when isMainModule:
   ## 
   ##    moldybread -h
   ##
+  ## Populating Results
+  ## ==================
+  ##
+  ## Result lists are populated in a variety of ways.  
+  ##
+  ## First, if you specify dublincore fields and matching strings with the `-dc` flag, results will be populated based on this. Each dc field should be separated
+  ## from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;).
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -dc "title:Pencil;contributor:Wiley"
+  ##
+  ## Next, you can populate results pased on a value in a PID or namespace with the `-n` flag:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -n test
+  ##
   ## Harvest Metadata
   ## ================
   ##
@@ -58,6 +76,12 @@ when isMainModule:
   ## .. code-block:: sh
   ##
   ##    moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file
+  ##
+  ## Metadata can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o harvest_metadata -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/paht/to/my/yaml/config/file
   ##
   ## Download FOXML Record
   ## =====================
@@ -96,7 +120,8 @@ when isMainModule:
     help("Like whitebread but written in nim.")
     option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata", "download_foxml"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
-    option("-n", "--namespaceorpid", help="Specify containing namespace or PID.", default="")
+    option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
+    option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
   var argv = commandLineParams()
@@ -104,22 +129,27 @@ when isMainModule:
   block main_control:
     try:
       var yaml_settings = read_yaml_config(opts.yaml_path)
-      let fedora_connection = initFedoraRequest(url=yaml_settings.base_url, auth=(yaml_settings.username, yaml_settings.password), yaml_settings.directory_path)
+      let fedora_connection = initFedoraRequest(
+        url=yaml_settings.base_url, 
+        auth=(yaml_settings.username, yaml_settings.password), 
+        output_directory=yaml_settings.directory_path, 
+        pid_part=opts.namespaceorpid,
+        dc_values=opts.dcsearch)
       case opts.operation
       of "harvest_metadata":
-        if opts.namespaceorpid != "":
-          fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
+        if opts.namespaceorpid == "" and opts.dcsearch == "":
+          echo "Must specify a containing namespace or pid."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata(opts.dsid)
           echo test.successes
-        else:
-          echo "Must specify a containing namespace or pid."
       of "download_foxml":
-        if opts.namespaceorpid != "":
-          fedora_connection.results = fedora_connection.populate_results(opts.namespaceorpid)
+        if opts.namespaceorpid == "" and opts.dcsearch == "":
+          echo "Must specify a containing namespace or pid."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
           echo test.successes
-        else:
-          echo "Must specify a containing namespace or pid."
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
@@ -127,6 +157,6 @@ when isMainModule:
         echo operation.successes
       else:
         echo "No matching operation."
-    except:
+    except YamlConstructionError:
       echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use th full path for now until I figure out how relative pathing works."
       break

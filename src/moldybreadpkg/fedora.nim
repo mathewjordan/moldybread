@@ -8,6 +8,8 @@ type
     client: HttpClient
     max_results*: int
     output_directory: string
+    dc_values: string
+    pid_part: string
 
   Message = ref object
     ## Type to handle messaging
@@ -37,18 +39,32 @@ proc get_path_with_pid(path, extension: string): seq[(string, string)] =
           pid = value.replace(extension, "")
       result.add((path, pid))
 
-proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory=""): FedoraRequest =
+proc convert_dc_pairs_to_string(dc_pairs: string): string =
+  let split_list = dc_pairs.split(";")
+  var new_list: seq[string]
+  for pair in split_list:
+    let separated_values = pair.split(":")
+    new_list.add(fmt"{separated_values[0]}%7E{separated_values[1]}")
+  join(new_list, "%20")
+
+proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory, dc_values, pid_part=""): FedoraRequest =
   ## Initializes new Fedora Request.
   ##
-  ## Examples:
+  ## Example with namespace / pid_part:
   ##
   ## .. code-block:: nim
   ##
-  ##    let fedora_connection = initFedoraRequest()
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##
+  ## Example with dc_values string:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(dc_values="title:Pencil;contributor:Wiley")
   ##
   let client = newHttpClient()
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
-  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: output_directory)
+  FedoraRequest(base_url: url, client: client, max_results: 1, output_directory: output_directory, dc_values: dc_values, pid_part: pid_part)
 
 proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin")): GsearchConnection =
   let client = newHttpClient()
@@ -122,19 +138,28 @@ method update_solr_record(this: GsearchConnection, pid: string): bool {. base .}
     # echo fmt"{request.status}: PID {pid} failed."
     false
 
-method populate_results*(this: FedoraRequest, query: string): seq[string] {. base .} =
+method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   ## Populates results for a Fedora request.
   ##
-  ## Examples:
+  ## Example:
   ##
   ## .. code-block:: nim
   ##
-  ##    let fedora_connection = initFedoraRequest()
-  ##    echo fedora_connection.populate_results("test")
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    echo fedora_connection.populate_results()
   ##
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
-  var request: string = fmt"{this.base_url}/fedora/objects?query=pid%7E{query}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+  var request, base_request: string 
+  if this.dc_values != "":
+    let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
+    echo dc_stuff
+    request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    base_request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+  else:
+    request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+  echo request
   var response: string = ""
   while token.len > 0:
     response = this.client.getContent(request)
@@ -142,7 +167,7 @@ method populate_results*(this: FedoraRequest, query: string): seq[string] {. bas
     for pid in new_pids:
       result.add(pid)
     token = this.get_token(response)
-    request = fmt"{this.base_url}/fedora/objects?query=pid%7E{query}*&pid=true&resultFormat=xml&maxResults={this.max_results}&sessionToken={token}"
+    request = fmt"{base_request}&sessionToken={token}"
 
 method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Populates results for a Fedora request.
@@ -151,8 +176,8 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ##
   ## .. code-block:: nim
   ##
-  ##    let fedora_connection = initFedoraRequest()
-  ##    fedora_connection.results = fedora_connection.populate_results("test")
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
   ##    fedora_connection.harvest_metadata("DC")
   ##
   var pid: string
@@ -183,7 +208,7 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   ##
   ## .. code-block:: nim
   ##
-  ##    let fedora_connection = initFedoraRequest()
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    discard fedora_connection.update_metadata("MODS", "/home/mark/nim_projects/moldybread/experiment")
   ##
   var successes, errors: seq[string]
@@ -211,8 +236,8 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   ## 
   ## .. code-block:: nim
   ##
-  ##    let fedora_connection = initFedoraRequest(output_directory="/home/harrison/nim_projects/moldybread/output")
-  ##    fedora_connection.results = fedora_connection.populate_results("test")
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/harrison/nim_projects/moldybread/output", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.download_foxml().successes
   ##
   var successes, errors: seq[string]
