@@ -83,6 +83,16 @@ when isMainModule:
   ##
   ##    moldybread -o harvest_metadata -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/paht/to/my/yaml/config/file
   ##
+  ## Harvest Metadata Unless It's a Page
+  ## ===================================
+  ##
+  ## Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need
+  ## a slightly different operation.
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o harvest_metadata_no_pages -d MODS -n test /full/path/to/my/yaml/file
+  ##
   ## Download FOXML Record
   ## =====================
   ##
@@ -118,7 +128,7 @@ when isMainModule:
   ##
   var p = newParser("Moldybread"):
     help("Like whitebread but written in nim.")
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "update_metadata", "download_foxml"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -144,6 +154,13 @@ when isMainModule:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata(opts.dsid)
           echo test.successes
+      of "harvest_metadata_no_pages":
+        if opts.namespaceorpid == "" and opts.dcsearch == "":
+          echo "Must specify a containing namespace or pid."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let test = fedora_connection.harvest_metadata_no_pages(opts.dsid)
+          echo test.successes
       of "download_foxml":
         if opts.namespaceorpid == "" and opts.dcsearch == "":
           echo "Must specify a containing namespace or pid."
@@ -158,6 +175,6 @@ when isMainModule:
         echo operation.successes
       else:
         echo "No matching operation."
-    except YamlConstructionError:
+    except:
       echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use th full path for now until I figure out how relative pathing works."
       break

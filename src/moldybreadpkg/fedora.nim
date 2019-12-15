@@ -115,6 +115,16 @@ method get(this: FedoraRecord, output_directory: string): bool {. base .} =
     true
   else:
     false
+
+method check_if_page(this: FedoraRecord): bool {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    if response.body != "":
+      false
+    else:
+      true
+  else:
+    false
   
 method modify_metadata_datastream(this: FedoraRecord, multipart_path: string): bool {. base .} =
   var data = newMultipartData()
@@ -178,7 +188,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ##
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    fedora_connection.results = fedora_connection.populate_results()
-  ##    fedora_connection.harvest_metadata("DC")
+  ##    discard fedora_connection.harvest_metadata("DC")
   ##
   var pid: string
   var successes, errors: seq[string]
@@ -187,6 +197,45 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
+    let response = new_record.get(this.output_directory)
+    if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method determine_pages(this: FedoraRequest): seq[string] {. base .} =
+  let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
+  for pid in this.results:
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle{predicate}", pid: pid)
+    let response = new_record.check_if_page()
+    if response:
+      result.add(pid)
+
+method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
+  ## Harvests metadata for matching objects unless its content model is a page.
+  ##
+  ## This method requires a datastream_id and downloads the metadata record if the object does not have an isMemberOf relationship.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    discard fedora_connection.harvest_metadata_no_pages("DC")
+  var not_pages = this.determine_pages()
+  var successes, errors: seq[string]
+  var pid: string
+  var attempts: int
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(not_pages):
+    pid = not_pages[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
     let response = new_record.get(this.output_directory)
     if response:
