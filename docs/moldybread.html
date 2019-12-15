@@ -827,6 +827,7 @@ function main() {
 <li><a class="reference" id="command-line-parsing_toc" href="#command-line-parsing">Command Line Parsing</a></li>
 <li><a class="reference" id="populating-results_toc" href="#populating-results">Populating Results</a></li>
 <li><a class="reference" id="harvest-metadata_toc" href="#harvest-metadata">Harvest Metadata</a></li>
+<li><a class="reference" id="harvest-metadata-unless-it-s-a-page_toc" href="#harvest-metadata-unless-it-s-a-page">Harvest Metadata Unless It's a Page</a></li>
 <li><a class="reference" id="download-foxml-record_toc" href="#download-foxml-record">Download FOXML Record</a></li>
 <li><a class="reference" id="update-metadata_toc" href="#update-metadata">Update Metadata</a></li>
 <li>
@@ -861,6 +862,9 @@ moldybread -n test</pre>
 moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file</pre><p>Metadata can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.</p>
 <pre class="listing">
 moldybread -o harvest_metadata -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/paht/to/my/yaml/config/file</pre>
+<h1><a class="toc-backref" id="harvest-metadata-unless-it-s-a-page" href="#harvest-metadata-unless-it-s-a-page">Harvest Metadata Unless It's a Page</a></h1><p>Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need a slightly different operation.</p>
+<pre class="listing">
+moldybread -o harvest_metadata_no_pages -d MODS -n test /full/path/to/my/yaml/file</pre>
 <h1><a class="toc-backref" id="download-foxml-record" href="#download-foxml-record">Download FOXML Record</a></h1><p>FOXML records can be downloaded by supplying a namespace.</p>
 <pre class="listing">
 moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
@@ -888,7 +892,7 @@ moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-13 17:27:58 UTC</small>
+        <small>Made with Nim. Generated: 2019-12-15 07:01:22 UTC</small>
       </div>
     </div>
   </div>
