@@ -126,6 +126,15 @@ when isMainModule:
   ##
   ## **NOTE**: This operation automatically updates SOLR with Gsearch.
   ##
+  let banner =     """
+  __  __       _     _         ____                     _ 
+ |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
+ | |\/| |/ _ \| |/ _` | | | | |  _ \| '__/ _ \/ _` |/ _` |
+ | |  | | (_) | | (_| | |_| | | |_) | | |  __/ (_| | (_| |
+ |_|  |_|\___/|_|\__,_|\__, | |____/|_|  \___|\__,_|\__,_|
+                       |___/     
+ 
+ """
   var p = newParser("Moldybread"):
     help("Like whitebread but written in nim.")
     option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml"])
@@ -146,6 +155,7 @@ when isMainModule:
         pid_part=opts.namespaceorpid,
         dc_values=opts.dcsearch,
         max_results=yaml_settings.max_results)
+      echo banner
       case opts.operation
       of "harvest_metadata":
         if opts.namespaceorpid == "" and opts.dcsearch == "":

@@ -163,13 +163,11 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   var request, base_request: string 
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
-    echo dc_stuff
     request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   else:
     request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-  echo request
   var response: string = ""
   while token.len > 0:
     response = this.client.getContent(request)
