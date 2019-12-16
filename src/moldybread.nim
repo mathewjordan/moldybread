@@ -53,20 +53,27 @@ when isMainModule:
   ## Populating Results
   ## ==================
   ##
-  ## Result lists are populated in a variety of ways.  
+  ## Result lists can be populated in several ways.  
   ##
-  ## First, if you specify dublincore fields and matching strings with the `-dc` flag, results will be populated based on this. Each dc field should be separated
-  ## from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;).
+  ## First, if you specify dublincore fields and matching strings with the `-dc` flag, results will be populated based on their metadata records. Each DublinCore field should be separated
+  ## from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;). Do not include a namespace.
   ##
   ## .. code-block:: sh
   ##
   ##    moldybread -dc "title:Pencil;contributor:Wiley"
   ##
-  ## Next, you can populate results pased on a value in a PID or namespace with the `-n` flag:
+  ## Next, you can populate results based on a value in a PID or namespace with the `-n` flag.  This value will normally be the namespace, but it doesn't have to be.  It can specify any
+  ## part of the pid.
   ##
   ## .. code-block:: sh
   ##
   ##    moldybread -n test
+  ##
+  ## Finally, you can populate results based on terms that appear anywhere in the metadata record with the `-t` flag.
+  ##
+  ## .. code-block:: she
+  ##
+  ##    moldybread -t Vancouver
   ##
   ## Harvest Metadata
   ## ================
@@ -81,7 +88,13 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    moldybread -o harvest_metadata -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/paht/to/my/yaml/config/file
+  ##    moldybread -o harvest_metadata -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/path/to/my/yaml/config/file
+  ##
+  ## Finally, you can also harvest metadata based on a keyword value.
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o harvest_metadata -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file
   ##
   ## Harvest Metadata Unless It's a Page
   ## ===================================
@@ -126,7 +139,7 @@ when isMainModule:
   ##
   ## **NOTE**: This operation automatically updates SOLR with Gsearch.
   ##
-  let banner =     """
+  const banner =     """
   __  __       _     _         ____                     _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
  | |\/| |/ _ \| |/ _` | | | | |  _ \| '__/ _ \/ _` |/ _` |
@@ -135,13 +148,14 @@ when isMainModule:
                        |___/     
  
  """
-  var p = newParser("Moldybread"):
-    help("Like whitebread but written in nim.")
+  var p = newParser("Moldy Bread"):
+    help(banner)
     option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
+    option("-t", "--terms", help="Specify key words for populating results.", default="")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
@@ -154,26 +168,27 @@ when isMainModule:
         output_directory=yaml_settings.directory_path, 
         pid_part=opts.namespaceorpid,
         dc_values=opts.dcsearch,
+        terms=opts.terms,
         max_results=yaml_settings.max_results)
       echo banner
       case opts.operation
       of "harvest_metadata":
-        if opts.namespaceorpid == "" and opts.dcsearch == "":
-          echo "Must specify a containing namespace or pid."
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata(opts.dsid)
           echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "harvest_metadata_no_pages":
-        if opts.namespaceorpid == "" and opts.dcsearch == "":
-          echo "Must specify a containing namespace or pid."
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata_no_pages(opts.dsid)
           echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "download_foxml":
-        if opts.namespaceorpid == "" and opts.dcsearch == "":
-          echo "Must specify a containing namespace or pid."
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
