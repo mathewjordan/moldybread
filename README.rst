@@ -1,7 +1,8 @@
 Moldy Bread
 ===========
 
-.. image:: https://travis-ci.org/markpbaggett/noaitools.png
+.. image:: https://travis-ci.org/markpbaggett/moldybread.png
+
    :alt: Travis Badge
 
 About
