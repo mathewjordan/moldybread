@@ -1,17 +1,32 @@
-import unittest, xmltools, moldybread
+import unittest, xmltools, moldybread, moldybreadpkg/fedora, typetraits
 
-suite "Test Population Procedures":
-  echo "Test Population Procedures for Fedora Connections"
+suite "Test Public Types Initialization":
+  echo "Test Public Types Initialization"
 
   setup:
-    let xml: string = """
-      <?xml version="1.0" encoding="UTF-8"?><result xmlns="http://www.fedora.info/definitions/1/0/types/" xmlns:types="http://www.fedora.info/definitions/1/0/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:schemaLocation="http://www.fedora.info/definitions/1/0/types/ http://localhost:8080/fedora/schema/findObjects.xsd"><listSession>
-      <token>cdbe076c0c32abc9e82478da7ec52dbc</token><cursor>0</cursor><expirationDate>2019-11-22T02:04:39.005Z</expirationDate></listSession><resultList><objectFields>
-      <pid>test:4</pid></objectFields><objectFields><pid>test:5</pid></objectFields></resultList></result>"""
-  
-  test "get_token":
-    check("cdbe076c0c32abc9e82478da7ec52dbc" == get_token(xml))
+    let fedora_connection = initFedoraRequest(
+      pid_part="test",
+      dc_values="title:Pencil;contributor:Wiley",
+      auth=("admin", "password"),
+      url="http://localhost",
+      max_results=20,
+      output_directory="/home/user/output")
 
-  test "grab_pids":
-    check(@["test:4", "test:5"] == grab_pids(xml))
+  test "FedoraRequest Initialization":
+    check(fedora_connection.base_url == "http://localhost")
+    check(fedora_connection.max_results == 20)
+
+suite "Test Fedora Connection Methods":
+  echo "Fedora Connection Methods"
+  
+  setup:
+    let fedora_connection = initFedoraRequest(pid_part="garbagenamespace")
+  
+  test "Population Works as Expected":
+    doAssert(typeof(fedora_connection.populate_results()) is seq[string])
+
+  test "Harvest Metadata":
+    doAssert(typeof(fedora_connection.harvest_metadata("DC")) is Message)
+
+  test "Harvest Metadata No Pages":
+    doAssert(typeof(fedora_connection.harvest_metadata_no_pages("DC")) is Message)
