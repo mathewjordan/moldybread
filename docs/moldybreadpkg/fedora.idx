@@ -1,5 +1,6 @@
 FedoraRequest	moldybreadpkg/fedora.html#FedoraRequest	fedora: FedoraRequest	
-initFedoraRequest	moldybreadpkg/fedora.html#initFedoraRequest,string,tuple of (string, string),string,string,string,int	fedora: initFedoraRequest(url: string = &quot;http://localhost:8080&quot;;\n                  auth = (&quot;fedoraAdmin&quot;, &quot;fedoraAdmin&quot;);\n                  output_directory, dc_values, pid_part = &quot;&quot;; max_results = 100): FedoraRequest	
+Message	moldybreadpkg/fedora.html#Message	fedora: Message	
+initFedoraRequest	moldybreadpkg/fedora.html#initFedoraRequest,string,tuple of (string, string),string,string,string,string,int	fedora: initFedoraRequest(url: string = &quot;http://localhost:8080&quot;;\n                  auth = (&quot;fedoraAdmin&quot;, &quot;fedoraAdmin&quot;);\n                  output_directory, dc_values, terms, pid_part = &quot;&quot;; max_results = 100): FedoraRequest	
 populate_results	moldybreadpkg/fedora.html#populate_results.e,FedoraRequest	fedora: populate_results(this: FedoraRequest): seq[string]	
 harvest_metadata	moldybreadpkg/fedora.html#harvest_metadata.e,FedoraRequest,string	fedora: harvest_metadata(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
 harvest_metadata_no_pages	moldybreadpkg/fedora.html#harvest_metadata_no_pages.e,FedoraRequest,string	fedora: harvest_metadata_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	

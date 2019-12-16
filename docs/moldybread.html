@@ -851,17 +851,21 @@ function main() {
 <h1><a class="toc-backref" id="command-line-parsing" href="#command-line-parsing">Command Line Parsing</a></h1><p>When in doubt, use help:</p>
 <pre class="listing">
 moldybread -h</pre>
-<h1><a class="toc-backref" id="populating-results" href="#populating-results">Populating Results</a></h1><p>Result lists are populated in a variety of ways.</p>
-<p>First, if you specify dublincore fields and matching strings with the <tt class="docutils literal"><span class="pre">-dc</span></tt> flag, results will be populated based on this. Each dc field should be separated from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;).</p>
+<h1><a class="toc-backref" id="populating-results" href="#populating-results">Populating Results</a></h1><p>Result lists can be populated in several ways.</p>
+<p>First, if you specify dublincore fields and matching strings with the <tt class="docutils literal"><span class="pre">-dc</span></tt> flag, results will be populated based on their metadata records. Each DublinCore field should be separated from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;). Do not include a namespace.</p>
 <pre class="listing">
-moldybread -dc &quot;title:Pencil;contributor:Wiley&quot;</pre><p>Next, you can populate results pased on a value in a PID or namespace with the <tt class="docutils literal"><span class="pre">-n</span></tt> flag:</p>
+moldybread -dc &quot;title:Pencil;contributor:Wiley&quot;</pre><p>Next, you can populate results based on a value in a PID or namespace with the <tt class="docutils literal"><span class="pre">-n</span></tt> flag.  This value will normally be the namespace, but it doesn't have to be.  It can specify any part of the pid.</p>
 <pre class="listing">
-moldybread -n test</pre>
+moldybread -n test</pre><p>Finally, you can populate results based on terms that appear anywhere in the metadata record with the <tt class="docutils literal"><span class="pre">-t</span></tt> flag.</p>
+<pre class="listing">
+moldybread -t Vancouver</pre>
 <h1><a class="toc-backref" id="harvest-metadata" href="#harvest-metadata">Harvest Metadata</a></h1><p>Metadata can be harvested by supplying a datastream id (MODS by default) and a namespace.</p>
 <pre class="listing">
 moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file</pre><p>Metadata can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.</p>
 <pre class="listing">
-moldybread -o harvest_metadata -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/paht/to/my/yaml/config/file</pre>
+moldybread -o harvest_metadata -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/path/to/my/yaml/config/file</pre><p>Finally, you can also harvest metadata based on a keyword value.</p>
+<pre class="listing">
+moldybread -o harvest_metadata -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file</pre>
 <h1><a class="toc-backref" id="harvest-metadata-unless-it-s-a-page" href="#harvest-metadata-unless-it-s-a-page">Harvest Metadata Unless It's a Page</a></h1><p>Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need a slightly different operation.</p>
 <pre class="listing">
 moldybread -o harvest_metadata_no_pages -d MODS -n test /full/path/to/my/yaml/file</pre>
@@ -892,7 +896,7 @@ moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-15 07:01:22 UTC</small>
+        <small>Made with Nim. Generated: 2019-12-16 19:27:42 UTC</small>
       </div>
     </div>
   </div>
