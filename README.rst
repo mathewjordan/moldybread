@@ -6,7 +6,9 @@ Moldy Bread
 
 An attempt to reimplement `whitebread <https://github.com/markpbaggett/whitebread/>`_ in `nim <https://nim-lang.org/>`_.
 
-
+.. image:: ..docs/moldy.gif
+   :alt: Harvesting Metadata with No Pages with Moldy Bread
+   
 
 Documentation
 -------------
