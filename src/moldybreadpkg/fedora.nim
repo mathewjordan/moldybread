@@ -11,7 +11,7 @@ type
     dc_values: string
     pid_part: string
 
-  Message = ref object
+  Message* = ref object
     ## Type to handle messaging
     errors*: seq[string]
     successes*: seq[string]
@@ -170,12 +170,16 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   var response: string = ""
   while token.len > 0:
-    response = this.client.getContent(request)
-    new_pids = this.grab_pids(response)
-    for pid in new_pids:
-      result.add(pid)
-    token = this.get_token(response)
-    request = fmt"{base_request}&sessionToken={token}"
+    try:
+      response = this.client.getContent(request)
+      new_pids = this.grab_pids(response)
+      for pid in new_pids:
+        result.add(pid)
+      token = this.get_token(response)
+      request = fmt"{base_request}&sessionToken={token}"
+    except OSError:
+      echo "Can't connect to host"
+      break
 
 method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Populates results for a Fedora request.
