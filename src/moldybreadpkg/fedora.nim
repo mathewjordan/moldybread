@@ -161,6 +161,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   var new_pids: seq[string] = @[]
   var token: string = "temporary"
   var request, base_request: string 
+  echo "\nPopulating results.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
     request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
@@ -195,6 +196,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   var pid: string
   var successes, errors: seq[string]
   var attempts: int
+  echo "Harvesting Metadata:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -212,11 +214,18 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
 
 method determine_pages(this: FedoraRequest): seq[string] {. base .} =
   let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
-  for pid in this.results:
+  var pid: string
+  echo "Checking for Pages:\n"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle{predicate}", pid: pid)
     let response = new_record.check_if_page()
     if response:
       result.add(pid)
+    bar.increment()
+  bar.finish()
 
 method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Harvests metadata for matching objects unless its content model is a page.
@@ -234,6 +243,7 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   var successes, errors: seq[string]
   var pid: string
   var attempts: int
+  echo "\nHarvesting Metadata:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(not_pages):
@@ -254,6 +264,8 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   ##
   ## This method requires a datastream_id and a directory (use full paths for now). Files must follow the same naming convention as their
   ## PIDs and end with a .xml extension (i.e test:1.xml).
+  ##
+  ## TODO:  This needs progress bars.
   ##
   ## Examples:
   ##
@@ -293,7 +305,12 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   ##
   var successes, errors: seq[string]
   var attempts: int
-  for pid in this.results:
+  var pid: string
+  echo "\nDownloading Foxml:\n"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
     let response = new_record.get(this.output_directory)
     if response:
@@ -301,4 +318,6 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
     else:
       errors.add(pid)
     attempts += 1
+    bar.increment()
+  bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)

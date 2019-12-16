@@ -163,21 +163,21 @@ when isMainModule:
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata(opts.dsid)
-          echo test.successes
+          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "harvest_metadata_no_pages":
         if opts.namespaceorpid == "" and opts.dcsearch == "":
           echo "Must specify a containing namespace or pid."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata_no_pages(opts.dsid)
-          echo test.successes
+          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "download_foxml":
         if opts.namespaceorpid == "" and opts.dcsearch == "":
           echo "Must specify a containing namespace or pid."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
-          echo test.successes
+          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
