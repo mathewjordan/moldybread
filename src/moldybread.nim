@@ -38,8 +38,9 @@ when isMainModule:
   ## =====================
   ## 
   ## Make a copy of default_config.yml as config.yml and set settings appropriately.
-  ## Currently, this is the only way to pass authentication information for Fedora.
+  ## Currently, this is the only way to pass authentication information for Fedora and Gsearch.
   ##
+  ## You can store this config file anywhere that you have read permissions.  Use the full path to the file in commands like in the examples below.
   ##
   ## Command Line Parsing
   ## ====================
