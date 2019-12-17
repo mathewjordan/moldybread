@@ -18,7 +18,7 @@ type
     successes*: seq[string]
     attempts*: int
 
-  FedoraRecord = object
+  FedoraRecord = ref object
     ## Type to handle Fedora Records
     client: HttpClient
     uri: string
@@ -94,6 +94,14 @@ method get_cursor(this: FedoraRequest, response: string): string {. base .} =
   else:
     result = "No cursor"
 
+method parse_string(this: FedoraRecord, response, element: string): seq[string] {. base .} =
+  let xml_response = Node.fromStringE(response)
+  let results = $(xml_response // element)
+  for node in split(results, '<'):
+    let value = node.replace("/", "").replace(fmt"{element}>", "")
+    if len(value) > 0:
+      result.add(value)
+
 method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .} =
   case $header["content-type"]
   of "application/xml", "text/xml":
@@ -116,6 +124,13 @@ method get(this: FedoraRecord, output_directory: string): bool {. base .} =
     true
   else:
     false
+
+method get_history(this: FedoraRecord): seq[string] {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    result = this.parse_string(response.body, "dsCreateDate")
+  else:
+    result.add("")
 
 method check_if_page(this: FedoraRecord): bool {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
@@ -143,6 +158,13 @@ method modify_metadata_datastream(this: FedoraRecord, multipart_path: string): b
 method put(this: FedoraRecord): bool {. base .} =
   try:
     discard this.client.request(this.uri, httpMethod = HttpPut)
+    true
+  except HttpRequestError:
+    false
+
+method delete(this: FedoraRecord): bool {. base .} =
+  try:
+    discard this.client.request(this.uri, httpMethod = HttpDelete)
     true
   except HttpRequestError:
     false
@@ -355,6 +377,38 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}?versionable={versionable}")
     let response = new_record.put()
     if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Message {. base .} =
+  ## Purges all but the latest version of a datastream.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    doAssert(typeOf(fedora_connection.purge_old_versions_of_datastream("MODS")) == Message)
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  echo fmt"{'\n'}Purging old versions of {dsid}.{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
+    let all_versions = new_record.get_history()
+    if len(all_versions) > 1:
+      new_record.uri = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/?startDT={all_versions[^1]}&endDT={all_versions[1]}&logMessage=DeletingOldVersions"
+      discard new_record.delete()
       successes.add(pid)
     else:
       errors.add(pid)

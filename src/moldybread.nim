@@ -133,7 +133,7 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    ./moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file
+  ##    moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file
   ##
   ## If your request was successful, you should see a list of PIDS that were successfully updated.
   ##
@@ -151,7 +151,18 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    ./moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file
+  ##    moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file
+  ##
+  ## Purge Old Versions of a Datastream
+  ## ==================================
+  ##
+  ## Purges all by the current version of a datastream.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o purge_old_versions -n test -d MODS -y /full/path/to/my/yaml/file
   ##
   const banner =     """
   __  __       _     _         ____                     _ 
@@ -164,7 +175,7 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream", "purge_old_versions"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -193,21 +204,21 @@ when isMainModule:
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata(opts.dsid)
-          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "harvest_metadata_no_pages":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.harvest_metadata_no_pages(opts.dsid)
-          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "download_foxml":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
-          echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "version_datastream":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
@@ -215,9 +226,19 @@ when isMainModule:
           fedora_connection.results = fedora_connection.populate_results()
           try:
             let test = fedora_connection.version_datastream(opts.dsid, parseBool(opts.versionable))
-            echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+            echo fmt"{'\n'}Successfully modified versioning for {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
           except ValueError:
             echo "Must set -v or --verbose to true or false."
+      of "purge_old_versions":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          try:
+            fedora_connection.results = fedora_connection.populate_results()
+            let test = fedora_connection.purge_old_versions_of_datastream(opts.dsid)
+            echo fmt"{'\n'}Purged old versions for {len(test.successes)} record(s).  Attempted but did not delete versions for {len(test.errors)} record(s)."
+          except ValueError:
+            echo "Must set -d or --dsid to select datastream."
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
