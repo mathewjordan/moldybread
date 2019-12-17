@@ -142,7 +142,7 @@ method modify_metadata_datastream(this: FedoraRecord, multipart_path: string): b
 
 method put(this: FedoraRecord): bool {. base .} =
   try:
-    let response = this.client.request(this.uri, httpMethod = HttpPut)
+    discard this.client.request(this.uri, httpMethod = HttpPut)
     true
   except HttpRequestError:
     false
