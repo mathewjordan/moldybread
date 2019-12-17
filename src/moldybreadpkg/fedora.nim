@@ -203,17 +203,22 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   var response: string = ""
+  stdout.write("[")
   while token.len > 0:
     try:
+      stdout.write("->")
       response = this.client.getContent(request)
       new_pids = this.grab_pids(response)
       for pid in new_pids:
         result.add(pid)
       token = this.get_token(response)
       request = fmt"{base_request}&sessionToken={token}"
+      stdout.flushFile()
     except OSError:
       echo "Can't connect to host"
       break
+  stdout.write("]")
+  stdout.flushFile()
 
 method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Populates results for a Fedora request.
@@ -229,7 +234,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   var pid: string
   var successes, errors: seq[string]
   var attempts: int
-  echo "Harvesting Metadata:\n"
+  echo "\n\nHarvesting Metadata:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -248,7 +253,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
 method determine_pages(this: FedoraRequest): seq[string] {. base .} =
   let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
   var pid: string
-  echo "Checking for Pages:\n"
+  echo "\n\nChecking for Pages:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -276,7 +281,7 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   var successes, errors: seq[string]
   var pid: string
   var attempts: int
-  echo "\nHarvesting Metadata:\n"
+  echo "\n\nHarvesting Metadata:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(not_pages):
@@ -339,7 +344,7 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   var successes, errors: seq[string]
   var attempts: int
   var pid: string
-  echo "\nDownloading Foxml:\n"
+  echo "\n\nDownloading Foxml:\n"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -369,7 +374,7 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
   var successes, errors: seq[string]
   var attempts: int
   var pid: string
-  echo fmt"{'\n'}Setting Versioning on {dsid} to {versionable}.{'\n'}"
+  echo fmt"{'\n'}{'\n'}Setting Versioning on {dsid} to {versionable}.{'\n'}"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -399,7 +404,7 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
   var successes, errors: seq[string]
   var attempts: int
   var pid: string
-  echo fmt"{'\n'}Purging old versions of {dsid}.{'\n'}"
+  echo fmt"{'\n'}{'\n'}Purging old versions of {dsid}.{'\n'}"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
