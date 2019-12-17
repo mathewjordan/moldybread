@@ -243,7 +243,7 @@ when isMainModule:
         if opts.path != "":
           yaml_settings.directory_path = opts.path
         let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
-        echo operation.successes
+        echo fmt"{'\n'}Successfully updated {len(operation.successes)} {opts.dsid} record(s).  Attempted but failed to update {len(operation.errors)} record(s)."
       else:
         echo "No matching operation."
     except:

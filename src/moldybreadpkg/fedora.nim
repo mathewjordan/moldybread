@@ -303,8 +303,6 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   ## This method requires a datastream_id and a directory (use full paths for now). Files must follow the same naming convention as their
   ## PIDs and end with a .xml extension (i.e test:1.xml).
   ##
-  ## TODO:  This needs progress bars.
-  ##
   ## Examples:
   ##
   ## .. code-block:: nim
@@ -315,9 +313,14 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   var successes, errors: seq[string]
   var pids_to_update: seq[(string, string)]
   var attempts: int
+  var pid: (string, string)
   let gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
   pids_to_update = get_path_with_pid(directory, ".xml")
-  for pid in pids_to_update:
+  echo fmt"{'\n'}{'\n'}Updating {datastream_id} based on XML files in {directory}:{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(pids_to_update):
+    pid = pids_to_update[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
     let response = new_record.modify_metadata_datastream(pid[0])
     if response:
@@ -326,6 +329,8 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
     else:
       errors.add(pid[1])
     attempts += 1
+    bar.increment()
+  bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
 method download_foxml*(this: FedoraRequest): Message {. base .} =
