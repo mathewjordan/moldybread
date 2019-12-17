@@ -139,6 +139,20 @@ when isMainModule:
   ##
   ## **NOTE**: This operation automatically updates SOLR with Gsearch.
   ##
+  ## Version Datastream
+  ## ==================
+  ##
+  ## Set whether a datastream should be versioned or not.
+  ##
+  ## **Note**: parseBool is used on the value associated wit -v / --versionable. Because of this, these values are true: `y`, `yes`, `true`, `1`, `on`.
+  ## Similarly, these values are false: `n`, `no`, `false`, `0`, `off`.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    ./moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file
+  ##
   const banner =     """
   __  __       _     _         ____                     _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -150,12 +164,13 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
     option("-t", "--terms", help="Specify key words for populating results.", default="")
+    option("-v", "--versionable", help="Sets if a datastream is versionable (true or false). Defaults to true.", default="true")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
@@ -193,6 +208,16 @@ when isMainModule:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
           echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+      of "version_datastream":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          try:
+            let test = fedora_connection.version_datastream(opts.dsid, parseBool(opts.versionable))
+            echo fmt"{'\n'}Successfully Downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          except ValueError:
+            echo "Must set -v or --verbose to true or false."
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path

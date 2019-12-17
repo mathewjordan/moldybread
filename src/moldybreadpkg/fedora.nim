@@ -140,6 +140,13 @@ method modify_metadata_datastream(this: FedoraRecord, multipart_path: string): b
   except HttpRequestError:
     false
 
+method put(this: FedoraRecord): bool {. base .} =
+  try:
+    let response = this.client.request(this.uri, httpMethod = HttpPut)
+    true
+  except HttpRequestError:
+    false
+
 method update_solr_record(this: GsearchConnection, pid: string): bool {. base .} =
   let request = this.client.request(fmt"{this.base_url}/fedoragsearch/rest?operation=updateIndex&action=fromPid&value={pid}", httpMethod=HttpPost)
   if request.status == "200 OK":
@@ -317,6 +324,36 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
     let response = new_record.get(this.output_directory)
+    if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool): Message {. base .} =
+  ## Makes a datastream versioned or not versioned.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    doAssert(typeOf(fedora_connection.version_datastream("MODS", false)) == Message)
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  echo fmt"{'\n'}Setting Versioning on {dsid} to {versionable}.{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}?versionable={versionable}")
+    let response = new_record.put()
     if response:
       successes.add(pid)
     else:
