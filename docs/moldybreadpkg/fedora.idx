@@ -6,3 +6,4 @@ harvest_metadata	moldybreadpkg/fedora.html#harvest_metadata.e,FedoraRequest,stri
 harvest_metadata_no_pages	moldybreadpkg/fedora.html#harvest_metadata_no_pages.e,FedoraRequest,string	fedora: harvest_metadata_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
 update_metadata	moldybreadpkg/fedora.html#update_metadata.e,FedoraRequest,string,string,	fedora: update_metadata(this: FedoraRequest; datastream_id: string; directory: string;\n                gsearch_auth: (string, string)): Message	
 download_foxml	moldybreadpkg/fedora.html#download_foxml.e,FedoraRequest	fedora: download_foxml(this: FedoraRequest): Message	
+version_datastream	moldybreadpkg/fedora.html#version_datastream.e,FedoraRequest,string,bool	fedora: version_datastream(this: FedoraRequest; dsid: string; versionable: bool): Message	
