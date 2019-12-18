@@ -379,7 +379,7 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
   var successes, errors: seq[string]
   var attempts: int
   var pid: string
-  echo fmt"{'\n'}{'\n'}Setting Versioning on {dsid} to {versionable}.{'\n'}"
+  echo fmt"{'\n'}{'\n'}Setting versioning on {dsid} to {versionable}.{'\n'}"
   var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
@@ -394,6 +394,41 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
     bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method change_object_state*(this: FedoraRequest, state: string): Message {. base .} =
+  ## Change the state of a datastream for a results set.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    doAssert(typeOf(fedora_connection.change_object_state("I")) == Message)
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  let accepted = ["A", "I", "D"]
+  echo fmt"{'\n'}{'\n'}Changing state of resluts to {state}.{'\n'}"
+  if state in accepted:
+    var bar = newProgressBar()
+    bar.start()
+    for i in 1..len(this.results):
+      pid = this.results[i-1]
+      let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}?state={state}")
+      let response = new_record.put()
+      if response:
+        successes.add(pid)
+      else:
+        errors.add(pid)
+      attempts += 1
+      bar.increment()
+    bar.finish()
+    Message(errors: errors, successes: successes, attempts: attempts)
+  else:
+    echo "\nState value must be [A]ctive, [I]nactive, or [D]eleted.\n"
+    Message(errors: this.results, successes: successes, attempts: len(this.results))
 
 method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Message {. base .} =
   ## Purges all but the latest version of a datastream.

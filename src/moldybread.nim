@@ -154,6 +154,17 @@ when isMainModule:
   ##
   ##    moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file
   ##
+  ## Change Object State
+  ## ===================
+  ##
+  ## Change the state of all objects in a result set to [`A`]ctive, [`I`]nactive, or [`D`]eleted. Defaults to `A`.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o change_object_state -n test -s I -v false -y /full/path/to/my/yaml/file
+  ##
   ## Purge Old Versions of a Datastream
   ## ==================================
   ##
@@ -176,11 +187,12 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream", "purge_old_versions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
     option("-p", "--path", help="Specify a directory path.", default="")
+    option("-s", "--state", help="Specify the state of an object when using change_object_state. Use A (default), I, or D.", default="A")
     option("-t", "--terms", help="Specify key words for populating results.", default="")
     option("-v", "--versionable", help="Sets if a datastream is versionable (true or false). Defaults to true.", default="true")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
@@ -229,7 +241,17 @@ when isMainModule:
             let test = fedora_connection.version_datastream(opts.dsid, parseBool(opts.versionable))
             echo fmt"{'\n'}Successfully modified versioning for {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
           except ValueError:
-            echo "Must set -v or --verbose to true or false."
+            echo "Must set -v or --versionable to true or false."
+      of "change_object_state":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          try:
+            let test = fedora_connection.change_object_state(opts.state)
+            echo fmt"{'\n'}Successfully modified versioning for {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          except ValueError:
+            echo "Must set -v or --versionable to true or false."
       of "purge_old_versions":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
