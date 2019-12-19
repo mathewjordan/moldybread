@@ -169,6 +169,15 @@ method delete(this: FedoraRecord): bool {. base .} =
   except HttpRequestError:
     false
 
+method clean_up_old_versions(this: FedoraRecord, fedora_base_url, pid, dsid: string): bool {. base .} =
+  let all_versions = this.get_history()
+  if len(all_versions) > 1:
+    this.uri = fmt"{fedora_base_url}/fedora/objects/{pid}/datastreams/{dsid}/?startDT={all_versions[^1]}&endDT={all_versions[1]}&logMessage=DeletingOldVersions"
+    discard this.delete()
+    true
+  else:
+    false
+
 method update_solr_record(this: GsearchConnection, pid: string): bool {. base .} =
   let request = this.client.request(fmt"{this.base_url}/fedoragsearch/rest?operation=updateIndex&action=fromPid&value={pid}", httpMethod=HttpPost)
   if request.status == "200 OK":
@@ -297,7 +306,7 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
-method update_metadata*(this: FedoraRequest, datastream_id: string, directory: string, gsearch_auth: (string, string)): Message {. base .} =
+method update_metadata*(this: FedoraRequest, datastream_id, directory: string, gsearch_auth: (string, string), clean_up=false): Message {. base .} =
   ## Updates metadata records based on files in a directory.
   ##
   ## This method requires a datastream_id and a directory (use full paths for now). Files must follow the same naming convention as their
@@ -321,11 +330,15 @@ method update_metadata*(this: FedoraRequest, datastream_id: string, directory: s
   bar.start()
   for i in 1..len(pids_to_update):
     pid = pids_to_update[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
+    var new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
     let response = new_record.modify_metadata_datastream(pid[0])
     if response:
       successes.add(pid[1])
       discard gsearch_connection.update_solr_record(pid[1])
+      if clean_up:
+        new_record.uri = fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}/history?format=xml"
+        discard new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid[1], dsid=datastream_id)
+      successes.add(pid[1])
     else:
       errors.add(pid[1])
     attempts += 1
@@ -450,10 +463,8 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
   for i in 1..len(this.results):
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
-    let all_versions = new_record.get_history()
-    if len(all_versions) > 1:
-      new_record.uri = fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/?startDT={all_versions[^1]}&endDT={all_versions[1]}&logMessage=DeletingOldVersions"
-      discard new_record.delete()
+    let response = new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid, dsid=dsid)
+    if response:
       successes.add(pid)
     else:
       errors.add(pid)

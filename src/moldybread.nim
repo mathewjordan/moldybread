@@ -140,6 +140,17 @@ when isMainModule:
   ##
   ## **NOTE**: This operation automatically updates SOLR with Gsearch.
   ##
+  ## Update Metadata and Delete Old Versions
+  ## =======================================
+  ##
+  ## If you don't want to keep the old versions of the datstream you're updating, you can purge them.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o update_metadata_and_delete_old_versions -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file
+  ##
   ## Version Datastream
   ## ==================
   ##
@@ -187,7 +198,7 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -267,8 +278,13 @@ when isMainModule:
           yaml_settings.directory_path = opts.path
         let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
         echo fmt"{'\n'}Successfully updated {len(operation.successes)} {opts.dsid} record(s).  Attempted but failed to update {len(operation.errors)} record(s)."
+      of "update_metadata_and_delete_old_versions":
+        if opts.path != "":
+          yaml_settings.directory_path = opts.path
+        let operation = fedora_connection.update_metadata(opts.dsid, yaml_settings.directory_path, gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password), clean_up=true)
+        echo fmt"{'\n'}Successfully updated {len(operation.successes)} {opts.dsid} record(s).  Attempted but failed to update {len(operation.errors)} record(s)."
       else:
         echo "No matching operation."
     except:
-      echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use th full path for now until I figure out how relative pathing works."
+      echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use the full path for now until I figure out how relative pathing works."
       break
