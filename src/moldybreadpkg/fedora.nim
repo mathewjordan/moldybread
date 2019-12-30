@@ -116,7 +116,7 @@ method write_output(this: FedoraRecord, filename: string, contents: string, outp
   writeFile(path, contents)
   fmt"Created {filename} at {output_directory}."
 
-method get(this: FedoraRecord, output_directory: string): bool {. base .} =
+method download(this: FedoraRecord, output_directory: string): bool {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
     let extension = this.get_extension(response.headers)
@@ -249,7 +249,7 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   for i in 1..len(this.results):
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
-    let response = new_record.get(this.output_directory)
+    let response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -296,7 +296,7 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   for i in 1..len(not_pages):
     pid = not_pages[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
-    let response = new_record.get(this.output_directory)
+    let response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -368,7 +368,7 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   for i in 1..len(this.results):
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
-    let response = new_record.get(this.output_directory)
+    let response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
