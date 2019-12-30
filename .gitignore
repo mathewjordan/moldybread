@@ -2,3 +2,4 @@
 bin/*
 config/config.yml
 sample_output/*
+experiment/*
