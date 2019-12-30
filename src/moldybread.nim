@@ -105,7 +105,7 @@ when isMainModule:
   ##
   ## .. code-block:: sh
   ##
-  ##    moldybread -o harvest_metadata_no_pages -d MODS -n test /full/path/to/my/yaml/file
+  ##    moldybread -o harvest_metadata_no_pages -d MODS -n test -y /full/path/to/my/yaml/file
   ##
   ## Download FOXML Record
   ## =====================
