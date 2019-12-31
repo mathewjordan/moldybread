@@ -103,7 +103,7 @@ method parse_string(this: FedoraRecord, response, element: string): seq[string] 
 
 method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .} =
   case $header["content-type"]
-  of "application/xml", "text/xml":
+  of "application/xml", "text/xml", "application/rdf+xml":
     ".xml"
   else:
     ".bin"
@@ -528,6 +528,36 @@ method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. ba
   for i in 1..len(this.results):
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml", pid: pid)
+    let response = new_record.download(this.output_directory)
+    if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string): Message {. base .} =
+  ## Downloads the specified datastream at a specific date for all items in a result set.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    discard fedora_connection.get_datastream_at_date("DC", "2019-12-25")
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  echo fmt"{'\n'}{'\n'}Getting {dsid} datastream at {date} for matching objects.{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/content?asOfDateTime={date}", pid: pid)
     let response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)

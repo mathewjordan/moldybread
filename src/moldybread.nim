@@ -209,6 +209,17 @@ when isMainModule:
   ##
   ##    moldybread -o get_datastream_history -n test -d RELS-EXT -y /full/path/to/my/yaml/file.yml
   ##
+  ## Download Datastream at Date
+  ## ===========================
+  ##
+  ## Serializes to disk the a datatream at a specific date for all results in a result set.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o get_datastream_at_date -n test -d RELS-EXT -dt 2019-12-19 -y /full/path/to/my/yaml/file.yml
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -220,7 +231,7 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -229,6 +240,7 @@ when isMainModule:
     option("-t", "--terms", help="Specify key words for populating results.", default="")
     option("-v", "--versionable", help="Sets if a datastream is versionable (true or false). Defaults to true.", default="true")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
+    option("-dt", "--datetime", help="Use to specify date when a date is required (yyyy-MM-dd).", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
   block main_control:
@@ -315,6 +327,18 @@ when isMainModule:
             fedora_connection.results = fedora_connection.populate_results()
             let test = fedora_connection.get_datastream_history(opts.dsid)
             echo fmt"{'\n'}Successfully downloaded the history of {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          except ValueError:
+            echo "Must set -d or --dsid to select datastream."
+      of "get_datastream_at_date":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        elif opts.datetime == "":
+          echo "Must specify the data / time for the datastream you wish to download."
+        else:
+          try:
+            fedora_connection.results = fedora_connection.populate_results()
+            let test = fedora_connection.get_datastream_at_date(opts.dsid, opts.datetime)
+            echo fmt"{'\n'}Successfully downloaded the {opts.dsid} at {opts.datetime} of {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
           except ValueError:
             echo "Must set -d or --dsid to select datastream."
       of "update_metadata":
