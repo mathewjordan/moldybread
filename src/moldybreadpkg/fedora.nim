@@ -41,9 +41,8 @@ proc get_path_with_pid(path, extension: string): seq[(string, string)] =
       result.add((path, pid))
 
 proc convert_dc_pairs_to_string(dc_pairs: string): string =
-  let split_list = dc_pairs.split(";")
   var new_list: seq[string]
-  for pair in split_list:
+  for pair in dc_pairs.split(";"):
     let separated_values = pair.split(":")
     new_list.add(fmt"{separated_values[0]}%7E{separated_values[1]}")
   join(new_list, "%20")
@@ -501,6 +500,36 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}")
     if new_record.get():
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. base .} =
+  ## Serializes the history of a datastream for a results set to disk.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.get_datastream_history("MODS").successes
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  echo fmt"{'\n'}{'\n'}Getting history of {dsid} for matching objects.{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml", pid: pid)
+    let response = new_record.download(this.output_directory)
+    if response:
       successes.add(pid)
     else:
       errors.add(pid)
