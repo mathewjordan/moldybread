@@ -125,6 +125,13 @@ method download(this: FedoraRecord, output_directory: string): bool {. base .} =
   else:
     false
 
+method get(this: FedoraRecord): bool {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    true
+  else:
+    false
+
 method get_history(this: FedoraRecord): seq[string] {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
@@ -465,6 +472,35 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
     let response = new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid, dsid=dsid)
     if response:
+      successes.add(pid)
+    else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Message {. base .} =
+  ## Lists the objects missing a specific datastream as a error.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.find_objects_missing_datastream("RELS-INT").errors
+  ##
+  var successes, errors: seq[string]
+  var attempts: int
+  var pid: string
+  echo fmt"{'\n'}{'\n'}Finding objects missing a {dsid} datastream.{'\n'}"
+  var bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}")
+    if new_record.get():
       successes.add(pid)
     else:
       errors.add(pid)
