@@ -30,8 +30,9 @@ type
     base_url: string
 
 proc get_path_with_pid(path, extension: string): seq[(string, string)] =
-  var parts_of_path: seq[string]
-  var pid: string
+  var
+    parts_of_path: seq[string]
+    pid: string
   for kind, path in walkDir(path):
     if kind == pcFile and path.contains(":"):
       parts_of_path = path.split("/")
@@ -72,30 +73,34 @@ proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin"
   GsearchConnection(client: client, base_url: url)
 
 method grab_pids(this: FedoraRequest, response: string): seq[string] {. base .} =
-  let xml_response = Node.fromStringE(response)
-  let results = $(xml_response // "pid")
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // "pid")
   for word in split(results, '<'):
     let new_word = word.replace("/", "").replace("pid>", "")
     if len(new_word) > 0:
       result.add(new_word)
 
 method get_token(this: FedoraRequest, response: string): string {. base .} =
-  let xml_response = Node.fromStringE(response)
-  let results = $(xml_response // "token")
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // "token")
   if results.len > 0:
     result = results.replace("<token>", "").replace("</token>", "")
 
 method get_cursor(this: FedoraRequest, response: string): string {. base .} =
-  let xml_response = Node.fromStringE(response)
-  let results = $(xml_response // "cursor")
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // "cursor")
   if results.len > 0:
     result = results.replace("<cursor>", "").replace("</cursor>", "")
   else:
     result = "No cursor"
 
 method parse_string(this: FedoraRecord, response, element: string): seq[string] {. base .} =
-  let xml_response = Node.fromStringE(response)
-  let results = $(xml_response // element)
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // element)
   for node in split(results, '<'):
     let value = node.replace("/", "").replace(fmt"{element}>", "")
     if len(value) > 0:
@@ -115,11 +120,11 @@ method write_output(this: FedoraRecord, filename: string, contents: string, outp
   writeFile(path, contents)
   fmt"Created {filename} at {output_directory}."
 
-method download(this: FedoraRecord, output_directory: string): bool {. base .} =
+method download(this: FedoraRecord, output_directory: string, suffix=""): bool {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
     let extension = this.get_extension(response.headers)
-    discard this.write_output(fmt"{this.pid}{extension}", response.body, output_directory)
+    discard this.write_output(fmt"{this.pid}{suffix}{extension}", response.body, output_directory)
     true
   else:
     false
@@ -203,9 +208,11 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    echo fedora_connection.populate_results()
   ##
-  var new_pids: seq[string] = @[]
-  var token: string = "temporary"
-  var request, base_request: string 
+  var
+    new_pids: seq[string] = @[]
+    token: string = "temporary"
+    request, base_request: string
+    response = ""
   echo "\nPopulating results.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
@@ -217,7 +224,6 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   else:
     request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-  var response: string = ""
   stdout.write("[")
   while token.len > 0:
     try:
@@ -246,11 +252,12 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.harvest_metadata("DC")
   ##
-  var pid: string
-  var successes, errors: seq[string]
-  var attempts: int
+  var
+    pid: string
+    successes, errors: seq[string]
+    attempts: int
+    bar = newProgressBar()
   echo "\n\nHarvesting Metadata:\n"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -267,9 +274,10 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
 
 method determine_pages(this: FedoraRequest): seq[string] {. base .} =
   let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
-  var pid: string
+  var
+    pid: string
+    bar = newProgressBar()
   echo "\n\nChecking for Pages:\n"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -292,12 +300,13 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.harvest_metadata_no_pages("DC")
-  var not_pages = this.determine_pages()
-  var successes, errors: seq[string]
-  var pid: string
-  var attempts: int
+  var
+    not_pages = this.determine_pages()
+    successes, errors: seq[string]
+    pid: string
+    attempts: int
+    bar = newProgressBar()
   echo "\n\nHarvesting Metadata:\n"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(not_pages):
     pid = not_pages[i-1]
@@ -325,14 +334,15 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    discard fedora_connection.update_metadata("MODS", "/home/mark/nim_projects/moldybread/experiment")
   ##
-  var successes, errors: seq[string]
-  var pids_to_update: seq[(string, string)]
-  var attempts: int
-  var pid: (string, string)
+  var
+    successes, errors: seq[string]
+    pids_to_update: seq[(string, string)]
+    attempts: int
+    pid: (string, string)
+    bar = newProgressBar()
   let gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
   pids_to_update = get_path_with_pid(directory, ".xml")
   echo fmt"{'\n'}{'\n'}Updating {datastream_id} based on XML files in {directory}:{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(pids_to_update):
     pid = pids_to_update[i-1]
@@ -365,11 +375,12 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.download_foxml().successes
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo "\n\nDownloading Foxml:\n"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -395,11 +406,12 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    doAssert(typeOf(fedora_connection.version_datastream("MODS", false)) == Message)
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo fmt"{'\n'}{'\n'}Setting versioning on {dsid} to {versionable}.{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -425,9 +437,10 @@ method change_object_state*(this: FedoraRequest, state: string): Message {. base
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    doAssert(typeOf(fedora_connection.change_object_state("I")) == Message)
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
   let accepted = ["A", "I", "D"]
   echo fmt"{'\n'}{'\n'}Changing state of resluts to {state}.{'\n'}"
   if state in accepted:
@@ -460,11 +473,12 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    doAssert(typeOf(fedora_connection.purge_old_versions_of_datastream("MODS")) == Message)
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo fmt"{'\n'}{'\n'}Purging old versions of {dsid}.{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -490,11 +504,12 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    echo fedora_connection.find_objects_missing_datastream("RELS-INT").errors
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo fmt"{'\n'}{'\n'}Finding objects missing a {dsid} datastream.{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -519,11 +534,12 @@ method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. ba
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    echo fedora_connection.get_datastream_history("MODS").successes
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo fmt"{'\n'}{'\n'}Getting history of {dsid} for matching objects.{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -549,11 +565,12 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.get_datastream_at_date("DC", "2019-12-25")
   ##
-  var successes, errors: seq[string]
-  var attempts: int
-  var pid: string
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
   echo fmt"{'\n'}{'\n'}Getting {dsid} datastream at {date} for matching objects.{'\n'}"
-  var bar = newProgressBar()
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
