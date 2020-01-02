@@ -859,19 +859,27 @@ function main() {
   <ul class="simple simple-toc-section">
       <li><a class="reference" href="#populate_results.e%2CFedoraRequest"
     title="populate_results(this: FedoraRequest): seq[string]"><wbr />populate_<wbr />results<span class="attachedType">FedoraRequest</span></a></li>
-  <li><a class="reference" href="#harvest_metadata.e%2CFedoraRequest%2Cstring"
-    title="harvest_metadata(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />metadata<span class="attachedType">FedoraRequest</span></a></li>
-  <li><a class="reference" href="#harvest_metadata_no_pages.e%2CFedoraRequest%2Cstring"
-    title="harvest_metadata_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />metadata_<wbr />no_<wbr />pages<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#harvest_datastream.e%2CFedoraRequest%2Cstring"
+    title="harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />datastream<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#harvest_datastream_no_pages.e%2CFedoraRequest%2Cstring"
+    title="harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />datastream_<wbr />no_<wbr />pages<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C"
-    title="update_metadata(this: FedoraRequest; datastream_id: string; directory: string;
-                gsearch_auth: (string, string)): Message"><wbr />update_<wbr />metadata<span class="attachedType">FedoraRequest</span></a></li>
+    title="update_metadata(this: FedoraRequest; datastream_id, directory: string;
+                gsearch_auth: (string, string); clean_up = false): Message"><wbr />update_<wbr />metadata<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#download_foxml.e%2CFedoraRequest"
     title="download_foxml(this: FedoraRequest): Message"><wbr />download_<wbr />foxml<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#version_datastream.e%2CFedoraRequest%2Cstring%2Cbool"
     title="version_datastream(this: FedoraRequest; dsid: string; versionable: bool): Message"><wbr />version_<wbr />datastream<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#change_object_state.e%2CFedoraRequest%2Cstring"
+    title="change_object_state(this: FedoraRequest; state: string): Message"><wbr />change_<wbr />object_<wbr />state<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#purge_old_versions_of_datastream.e%2CFedoraRequest%2Cstring"
     title="purge_old_versions_of_datastream(this: FedoraRequest; dsid: string): Message"><wbr />purge_<wbr />old_<wbr />versions_<wbr />of_<wbr />datastream<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#find_objects_missing_datastream.e%2CFedoraRequest%2Cstring"
+    title="find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message"><wbr />find_<wbr />objects_<wbr />missing_<wbr />datastream<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#get_datastream_history.e%2CFedoraRequest%2Cstring"
+    title="get_datastream_history(this: FedoraRequest; dsid: string): Message"><wbr />get_<wbr />datastream_<wbr />history<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#get_datastream_at_date.e%2CFedoraRequest%2Cstring%2Cstring"
+    title="get_datastream_at_date(this: FedoraRequest; dsid: string; date: string): Message"><wbr />get_<wbr />datastream_<wbr />at_<wbr />date<span class="attachedType">FedoraRequest</span></a></li>
 
   </ul>
 </li>
@@ -901,7 +909,7 @@ function main() {
 
 Type to Handle Fedora requests
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L4"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L4"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L4" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -916,7 +924,7 @@ class="link-seesrc" target="_blank">Source</a>
 
 Type to handle messaging
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L15"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L15"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L15" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -938,7 +946,7 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span></pre><p>Example with dc_values string:</p>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">dc_values</span><span class="Operator">=</span><span class="StringLit">&quot;title:Pencil;contributor:Wiley&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L51"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L51"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L51" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -960,13 +968,13 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L181"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L213"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L181" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L213" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
-<a id="harvest_metadata.e,FedoraRequest,string"></a>
-<dt><pre><span class="Keyword">method</span> <a href="#harvest_metadata.e%2CFedoraRequest%2Cstring"><span class="Identifier">harvest_metadata</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span> <span class="Other">=</span> <span class="StringLit">&quot;MODS&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
+<a id="harvest_datastream.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#harvest_datastream.e%2CFedoraRequest%2Cstring"><span class="Identifier">harvest_datastream</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span> <span class="Other">=</span> <span class="StringLit">&quot;MODS&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
     <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span>
     <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span>
     <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
@@ -976,15 +984,15 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Examples:</p>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_metadata</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
+<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L223"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L256"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L223" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L256" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
-<a id="harvest_metadata_no_pages.e,FedoraRequest,string"></a>
-<dt><pre><span class="Keyword">method</span> <a href="#harvest_metadata_no_pages.e%2CFedoraRequest%2Cstring"><span class="Identifier">harvest_metadata_no_pages</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span> <span class="Other">=</span> <span class="StringLit">&quot;MODS&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+<a id="harvest_datastream_no_pages.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#harvest_datastream_no_pages.e%2CFedoraRequest%2Cstring"><span class="Identifier">harvest_datastream_no_pages</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span> <span class="Other">=</span> <span class="StringLit">&quot;MODS&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
     <span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span>
                  <span class="Identifier">TimeoutError</span><span class="Other">,</span> <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
     <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span>
@@ -996,19 +1004,20 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Example:</p>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_metadata_no_pages</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
+<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_datastream_no_pages</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L268"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L305"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L268" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L305" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="update_metadata.e,FedoraRequest,string,string,"></a>
-<dt><pre><span class="Keyword">method</span> <a href="#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C"><span class="Identifier">update_metadata</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">directory</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                      <span class="Identifier">gsearch_auth</span><span class="Other">:</span> <span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">OverflowError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span>
-    <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dt><pre><span class="Keyword">method</span> <a href="#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C"><span class="Identifier">update_metadata</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">datastream_id</span><span class="Other">,</span> <span class="Identifier">directory</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                      <span class="Identifier">gsearch_auth</span><span class="Other">:</span> <span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">clean_up</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">OverflowError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span>
+                 <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span>
+                 <span class="Identifier">XmlError</span><span class="Other">,</span> <span class="Identifier">RegexError</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span>
+    <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
 <p>Updates metadata records based on files in a directory.</p>
@@ -1017,9 +1026,9 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">update_metadata</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;/home/mark/nim_projects/moldybread/experiment&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L300"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L339"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L300" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L339" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="download_foxml.e,FedoraRequest"></a>
@@ -1036,9 +1045,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">download_foxml</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L336"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L381"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L336" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L381" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="version_datastream.e,FedoraRequest,string,bool"></a>
@@ -1054,9 +1063,27 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">version_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">,</span> <span class="Identifier">false</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L368"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L415"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L368" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L415" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<a id="change_object_state.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#change_object_state.e%2CFedoraRequest%2Cstring"><span class="Identifier">change_object_state</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">state</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
+    <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span> <span class="Identifier">ProtocolError</span><span class="Other">,</span>
+    <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Change the state of a datastream for a results set.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">change_object_state</span><span class="Punctuation">(</span><span class="StringLit">&quot;I&quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L447"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L447" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="purge_old_versions_of_datastream.e,FedoraRequest,string"></a>
@@ -1073,9 +1100,64 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">purge_old_versions_of_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/74c27bab3058f5e9820bf015423e72bb7d39d039/src/moldybreadpkg/fedora.nim#L398"
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L484"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L398" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L484" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<a id="find_objects_missing_datastream.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#find_objects_missing_datastream.e%2CFedoraRequest%2Cstring"><span class="Identifier">find_objects_missing_datastream</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">dsid</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span>
+                 <span class="Identifier">TimeoutError</span><span class="Other">,</span> <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Lists the objects missing a specific datastream as a error.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">find_objects_missing_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;RELS-INT&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">errors</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L516"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L516" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<a id="get_datastream_history.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#get_datastream_history.e%2CFedoraRequest%2Cstring"><span class="Identifier">get_datastream_history</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">dsid</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
+    <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span>
+    <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span>
+    <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Serializes the history of a datastream for a results set to disk.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">output_directory</span><span class="Operator">=</span><span class="StringLit">&quot;/home/mark/nim_projects/moldybread/experiment&quot;</span><span class="Punctuation">,</span> <span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_datastream_history</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L546"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L546" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<a id="get_datastream_at_date.e,FedoraRequest,string,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#get_datastream_at_date.e%2CFedoraRequest%2Cstring%2Cstring"><span class="Identifier">get_datastream_at_date</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span> <span class="Identifier">dsid</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">date</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="fedora.html#Message"><span class="Identifier">Message</span></a> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma">
+    <span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span>
+                 <span class="Identifier">TimeoutError</span><span class="Other">,</span> <span class="Identifier">ProtocolError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
+    <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span>
+    <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Downloads the specified datastream at a specific date for all items in a result set.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">output_directory</span><span class="Operator">=</span><span class="StringLit">&quot;/home/mark/nim_projects/moldybread/experiment&quot;</span><span class="Punctuation">,</span> <span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_datastream_at_date</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;2019-12-25&quot;</span><span class="Punctuation">)</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/7d385563ca101566bcb308033ae5e19984e2ecdf/src/moldybreadpkg/fedora.nim#L578"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L578" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1088,7 +1170,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-17 19:29:43 UTC</small>
+        <small>Made with Nim. Generated: 2020-01-02 02:19:25 UTC</small>
       </div>
     </div>
   </div>

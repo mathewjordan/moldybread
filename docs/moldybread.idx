@@ -2,9 +2,14 @@ MOLDY BREAD	moldybread.html
 Defining a config.yml	moldybread.html#defining-a-configdotyml	 Defining a config.yml	
 Command Line Parsing	moldybread.html#command-line-parsing	 Command Line Parsing	
 Populating Results	moldybread.html#populating-results	 Populating Results	
-Harvest Metadata	moldybread.html#harvest-metadata	 Harvest Metadata	
-Harvest Metadata Unless It's a Page	moldybread.html#harvest-metadata-unless-it-s-a-page	 Harvest Metadata Unless It's a Page	
+Harvest Datastream (including metadata)	moldybread.html#harvest-datastream-including-metadata	 Harvest Datastream (including metadata)	
+Harvest Datastream Unless It's a part of a Page	moldybread.html#harvest-datastream-unless-it-s-a-part-of-a-page	 Harvest Datastream Unless It's a part of a Page	
 Download FOXML Record	moldybread.html#download-foxml-record	 Download FOXML Record	
 Update Metadata	moldybread.html#update-metadata	 Update Metadata	
+Update Metadata and Delete Old Versions	moldybread.html#update-metadata-and-delete-old-versions	 Update Metadata and Delete Old Versions	
 Version Datastream	moldybread.html#version-datastream	 Version Datastream	
+Change Object State	moldybread.html#change-object-state	 Change Object State	
 Purge Old Versions of a Datastream	moldybread.html#purge-old-versions-of-a-datastream	 Purge Old Versions of a Datastream	
+Find Objects Missing a Particular Datastream	moldybread.html#find-objects-missing-a-particular-datastream	 Find Objects Missing a Particular Datastream	
+Download Datastream Histories as XML	moldybread.html#download-datastream-histories-as-xml	 Download Datastream Histories as XML	
+Download Datastream at Date	moldybread.html#download-datastream-at-date	 Download Datastream at Date	

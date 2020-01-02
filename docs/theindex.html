@@ -806,7 +806,11 @@ function main() {
   <div class="container">
     <h1 class="title">Index</h1>
     Documents: <a href="moldybread.html">MOLDY BREAD</a>.<br/><p />Modules: <a href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>.<br/><p /><h2>API symbols</h2>
-<dl><dt><a name="download_foxml" href="#download_foxml"><span>download_foxml:</span></a></dt><dd><ul class="simple">
+<dl><dt><a name="change_object_state" href="#change_object_state"><span>change_object_state:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: change_object_state(this: FedoraRequest; state: string): Message" href="moldybreadpkg/fedora.html#change_object_state.e%2CFedoraRequest%2Cstring">fedora: change_object_state(this: FedoraRequest; state: string): Message</a></li>
+          </ul></dd>
+<dt><a name="download_foxml" href="#download_foxml"><span>download_foxml:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: download_foxml(this: FedoraRequest): Message" href="moldybreadpkg/fedora.html#download_foxml.e%2CFedoraRequest">fedora: download_foxml(this: FedoraRequest): Message</a></li>
           </ul></dd>
@@ -814,13 +818,25 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="fedora: FedoraRequest" href="moldybreadpkg/fedora.html#FedoraRequest">fedora: FedoraRequest</a></li>
           </ul></dd>
-<dt><a name="harvest_metadata" href="#harvest_metadata"><span>harvest_metadata:</span></a></dt><dd><ul class="simple">
+<dt><a name="find_objects_missing_datastream" href="#find_objects_missing_datastream"><span>find_objects_missing_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="fedora: harvest_metadata(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message" href="moldybreadpkg/fedora.html#harvest_metadata.e%2CFedoraRequest%2Cstring">fedora: harvest_metadata(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message</a></li>
+          data-doc-search-tag="fedora: find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#find_objects_missing_datastream.e%2CFedoraRequest%2Cstring">fedora: find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message</a></li>
           </ul></dd>
-<dt><a name="harvest_metadata_no_pages" href="#harvest_metadata_no_pages"><span>harvest_metadata_no_pages:</span></a></dt><dd><ul class="simple">
+<dt><a name="get_datastream_at_date" href="#get_datastream_at_date"><span>get_datastream_at_date:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="fedora: harvest_metadata_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message" href="moldybreadpkg/fedora.html#harvest_metadata_no_pages.e%2CFedoraRequest%2Cstring">fedora: harvest_metadata_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message</a></li>
+          data-doc-search-tag="fedora: get_datastream_at_date(this: FedoraRequest; dsid: string; date: string): Message" href="moldybreadpkg/fedora.html#get_datastream_at_date.e%2CFedoraRequest%2Cstring%2Cstring">fedora: get_datastream_at_date(this: FedoraRequest; dsid: string; date: string): Message</a></li>
+          </ul></dd>
+<dt><a name="get_datastream_history" href="#get_datastream_history"><span>get_datastream_history:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: get_datastream_history(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#get_datastream_history.e%2CFedoraRequest%2Cstring">fedora: get_datastream_history(this: FedoraRequest; dsid: string): Message</a></li>
+          </ul></dd>
+<dt><a name="harvest_datastream" href="#harvest_datastream"><span>harvest_datastream:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message" href="moldybreadpkg/fedora.html#harvest_datastream.e%2CFedoraRequest%2Cstring">fedora: harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message</a></li>
+          </ul></dd>
+<dt><a name="harvest_datastream_no_pages" href="#harvest_datastream_no_pages"><span>harvest_datastream_no_pages:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message" href="moldybreadpkg/fedora.html#harvest_datastream_no_pages.e%2CFedoraRequest%2Cstring">fedora: harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message</a></li>
           </ul></dd>
 <dt><a name="initFedoraRequest" href="#initFedoraRequest"><span>initFedoraRequest:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -844,9 +860,9 @@ function main() {
           </ul></dd>
 <dt><a name="update_metadata" href="#update_metadata"><span>update_metadata:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="fedora: update_metadata(this: FedoraRequest; datastream_id: string; directory: string;
-                gsearch_auth: (string, string)): Message" href="moldybreadpkg/fedora.html#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C">fedora: update_metadata(this: FedoraRequest; datastream_id: string; directory: string;
-                gsearch_auth: (string, string)): Message</a></li>
+          data-doc-search-tag="fedora: update_metadata(this: FedoraRequest; datastream_id, directory: string;
+                gsearch_auth: (string, string); clean_up = false): Message" href="moldybreadpkg/fedora.html#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C">fedora: update_metadata(this: FedoraRequest; datastream_id, directory: string;
+                gsearch_auth: (string, string); clean_up = false): Message</a></li>
           </ul></dd>
 <dt><a name="version_datastream" href="#version_datastream"><span>version_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -857,7 +873,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-17 19:29:43 UTC</small>
+        <small>Made with Nim. Generated: 2020-01-02 02:19:25 UTC</small>
       </div>
     </div>
   </div>

@@ -826,12 +826,17 @@ function main() {
 <li><a class="reference" id="defining-a-configdotyml_toc" href="#defining-a-configdotyml">Defining a config.yml</a></li>
 <li><a class="reference" id="command-line-parsing_toc" href="#command-line-parsing">Command Line Parsing</a></li>
 <li><a class="reference" id="populating-results_toc" href="#populating-results">Populating Results</a></li>
-<li><a class="reference" id="harvest-metadata_toc" href="#harvest-metadata">Harvest Metadata</a></li>
-<li><a class="reference" id="harvest-metadata-unless-it-s-a-page_toc" href="#harvest-metadata-unless-it-s-a-page">Harvest Metadata Unless It's a Page</a></li>
+<li><a class="reference" id="harvest-datastream-including-metadata_toc" href="#harvest-datastream-including-metadata">Harvest Datastream (including metadata)</a></li>
+<li><a class="reference" id="harvest-datastream-unless-it-s-a-part-of-a-page_toc" href="#harvest-datastream-unless-it-s-a-part-of-a-page">Harvest Datastream Unless It's a part of a Page</a></li>
 <li><a class="reference" id="download-foxml-record_toc" href="#download-foxml-record">Download FOXML Record</a></li>
 <li><a class="reference" id="update-metadata_toc" href="#update-metadata">Update Metadata</a></li>
+<li><a class="reference" id="update-metadata-and-delete-old-versions_toc" href="#update-metadata-and-delete-old-versions">Update Metadata and Delete Old Versions</a></li>
 <li><a class="reference" id="version-datastream_toc" href="#version-datastream">Version Datastream</a></li>
+<li><a class="reference" id="change-object-state_toc" href="#change-object-state">Change Object State</a></li>
 <li><a class="reference" id="purge-old-versions-of-a-datastream_toc" href="#purge-old-versions-of-a-datastream">Purge Old Versions of a Datastream</a></li>
+<li><a class="reference" id="find-objects-missing-a-particular-datastream_toc" href="#find-objects-missing-a-particular-datastream">Find Objects Missing a Particular Datastream</a></li>
+<li><a class="reference" id="download-datastream-histories-as-xml_toc" href="#download-datastream-histories-as-xml">Download Datastream Histories as XML</a></li>
+<li><a class="reference" id="download-datastream-at-date_toc" href="#download-datastream-at-date">Download Datastream at Date</a></li>
 <li>
   <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
   <ul class="simple simple-toc-section">
@@ -862,16 +867,16 @@ moldybread -dc &quot;title:Pencil;contributor:Wiley&quot;</pre><p>Next, you can 
 moldybread -n test</pre><p>Finally, you can populate results based on terms that appear anywhere in the metadata record with the <tt class="docutils literal"><span class="pre">-t</span></tt> flag.</p>
 <pre class="listing">
 moldybread -t Vancouver</pre>
-<h1><a class="toc-backref" id="harvest-metadata" href="#harvest-metadata">Harvest Metadata</a></h1><p>Metadata can be harvested by supplying a datastream id (MODS by default) and a namespace.</p>
+<h1><a class="toc-backref" id="harvest-datastream-including-metadata" href="#harvest-datastream-including-metadata">Harvest Datastream (including metadata)</a></h1><p>Datastreams can be harvested by supplying a datastream id (MODS by default) and a namespace. This can be used for metadata files or any other datastream.</p>
 <pre class="listing">
-moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file</pre><p>Metadata can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.</p>
+moldybread -o harvest_datastream -d MODS -n test -y /full/path/to/my/yaml/file</pre><p>Datastreams can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.</p>
 <pre class="listing">
-moldybread -o harvest_metadata -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/path/to/my/yaml/config/file</pre><p>Finally, you can also harvest metadata based on a keyword value.</p>
+moldybread -o harvest_datastream -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/path/to/my/yaml/config/file</pre><p>Finally, you can also harvest datastreams based on a keyword value.</p>
 <pre class="listing">
-moldybread -o harvest_metadata -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file</pre>
-<h1><a class="toc-backref" id="harvest-metadata-unless-it-s-a-page" href="#harvest-metadata-unless-it-s-a-page">Harvest Metadata Unless It's a Page</a></h1><p>Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need a slightly different operation.</p>
+moldybread -o harvest_datastream -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file</pre>
+<h1><a class="toc-backref" id="harvest-datastream-unless-it-s-a-part-of-a-page" href="#harvest-datastream-unless-it-s-a-part-of-a-page">Harvest Datastream Unless It's a part of a Page</a></h1><p>Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need a slightly different operation. This can be used for any datastream.</p>
 <pre class="listing">
-moldybread -o harvest_metadata_no_pages -d MODS -n test /full/path/to/my/yaml/file</pre>
+moldybread -o harvest_datastream_no_pages -d MODS -n test -y /full/path/to/my/yaml/file</pre>
 <h1><a class="toc-backref" id="download-foxml-record" href="#download-foxml-record">Download FOXML Record</a></h1><p>FOXML records can be downloaded by supplying a namespace.</p>
 <pre class="listing">
 moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
@@ -886,15 +891,35 @@ moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
 moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file</pre><p>If your request was successful, you should see a list of PIDS that were successfully updated.</p>
 <p><strong>NOTE</strong>: This operation automatically updates SOLR with Gsearch.</p>
 
+<h1><a class="toc-backref" id="update-metadata-and-delete-old-versions" href="#update-metadata-and-delete-old-versions">Update Metadata and Delete Old Versions</a></h1><p>If you don't want to keep the old versions of the datstream you're updating, you can purge them.</p>
+<p>Example command:</p>
+<pre class="listing">
+moldybread -o update_metadata_and_delete_old_versions -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file</pre>
 <h1><a class="toc-backref" id="version-datastream" href="#version-datastream">Version Datastream</a></h1><p>Set whether a datastream should be versioned or not.</p>
 <p><strong>Note</strong>: parseBool is used on the value associated wit -v / --versionable. Because of this, these values are true: <tt class="docutils literal"><span class="pre">y</span></tt>, <tt class="docutils literal"><span class="pre">yes</span></tt>, <tt class="docutils literal"><span class="pre">true</span></tt>, <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">on</span></tt>. Similarly, these values are false: <tt class="docutils literal"><span class="pre">n</span></tt>, <tt class="docutils literal"><span class="pre">no</span></tt>, <tt class="docutils literal"><span class="pre">false</span></tt>, <tt class="docutils literal"><span class="pre">0</span></tt>, <tt class="docutils literal"><span class="pre">off</span></tt>.</p>
 <p>Example command:</p>
 <pre class="listing">
 moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file</pre>
+<h1><a class="toc-backref" id="change-object-state" href="#change-object-state">Change Object State</a></h1><p>Change the state of all objects in a result set to [<tt class="docutils literal"><span class="pre">A</span></tt>]ctive, [<tt class="docutils literal"><span class="pre">I</span></tt>]nactive, or [<tt class="docutils literal"><span class="pre">D</span></tt>]eleted. Defaults to <tt class="docutils literal"><span class="pre">A</span></tt>.</p>
+<p>Example command:</p>
+<pre class="listing">
+moldybread -o change_object_state -n test -s I -v false -y /full/path/to/my/yaml/file</pre>
 <h1><a class="toc-backref" id="purge-old-versions-of-a-datastream" href="#purge-old-versions-of-a-datastream">Purge Old Versions of a Datastream</a></h1><p>Purges all by the current version of a datastream.</p>
 <p>Example command:</p>
 <pre class="listing">
-moldybread -o purge_old_versions -n test -d MODS -y /full/path/to/my/yaml/file</pre></p>
+moldybread -o purge_old_versions -n test -d MODS -y /full/path/to/my/yaml/file</pre>
+<h1><a class="toc-backref" id="find-objects-missing-a-particular-datastream" href="#find-objects-missing-a-particular-datastream">Find Objects Missing a Particular Datastream</a></h1><p>Finds all objects in a results set that are missing a particular datastream.</p>
+<p>Example command:</p>
+<pre class="listing">
+moldybread -o find_objs_missing_dsid -n test -d MODS -y /full/path/to/my/yaml/file</pre>
+<h1><a class="toc-backref" id="download-datastream-histories-as-xml" href="#download-datastream-histories-as-xml">Download Datastream Histories as XML</a></h1><p>Serializes to disk the history of a specific datatream as XML for all results in a result set.</p>
+<p>Example command:</p>
+<pre class="listing">
+moldybread -o get_datastream_history -n test -d RELS-EXT -y /full/path/to/my/yaml/file.yml</pre>
+<h1><a class="toc-backref" id="download-datastream-at-date" href="#download-datastream-at-date">Download Datastream at Date</a></h1><p>Serializes to disk the a datatream at a specific date for all results in a result set.</p>
+<p>Example command:</p>
+<pre class="listing">
+moldybread -o get_datastream_at_date -n test -d RELS-EXT -dt 2019-12-19 -y /full/path/to/my/yaml/file.yml</pre></p>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
@@ -908,7 +933,7 @@ moldybread -o purge_old_versions -n test -d MODS -y /full/path/to/my/yaml/file</
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-12-17 19:29:43 UTC</small>
+        <small>Made with Nim. Generated: 2020-01-02 02:19:25 UTC</small>
       </div>
     </div>
   </div>
