@@ -76,36 +76,36 @@ when isMainModule:
   ##
   ##    moldybread -t Vancouver
   ##
-  ## Harvest Metadata
-  ## ================
+  ## Harvest Datastream (including metadata)
+  ## =======================================
   ##
-  ## Metadata can be harvested by supplying a datastream id (MODS by default) and a namespace.
-  ##
-  ## .. code-block:: sh
-  ##
-  ##    moldybread -o harvest_metadata -d MODS -n test -y /full/path/to/my/yaml/file
-  ##
-  ## Metadata can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.
+  ## Datastreams can be harvested by supplying a datastream id (MODS by default) and a namespace. This can be used for metadata files or any other datastream.
   ##
   ## .. code-block:: sh
   ##
-  ##    moldybread -o harvest_metadata -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/path/to/my/yaml/config/file
+  ##    moldybread -o harvest_datastream -d MODS -n test -y /full/path/to/my/yaml/file
   ##
-  ## Finally, you can also harvest metadata based on a keyword value.
+  ## Datastreams can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.
   ##
   ## .. code-block:: sh
   ##
-  ##    moldybread -o harvest_metadata -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file
+  ##    moldybread -o harvest_datastream -d MODS -dc "title:Pencil;contributor:Wiley" -y /full/path/to/my/yaml/config/file
   ##
-  ## Harvest Metadata Unless It's a Page
-  ## ===================================
+  ## Finally, you can also harvest datastreams based on a keyword value.
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o harvest_datastream -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file
+  ##
+  ## Harvest Datastream Unless It's a part of a Page
+  ## ===============================================
   ##
   ## Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need
-  ## a slightly different operation.
+  ## a slightly different operation. This can be used for any datastream.
   ##
   ## .. code-block:: sh
   ##
-  ##    moldybread -o harvest_metadata_no_pages -d MODS -n test -y /full/path/to/my/yaml/file
+  ##    moldybread -o harvest_datastream_no_pages -d MODS -n test -y /full/path/to/my/yaml/file
   ##
   ## Download FOXML Record
   ## =====================
@@ -231,7 +231,7 @@ when isMainModule:
  """
   var p = newParser("Moldy Bread"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_metadata", "harvest_metadata_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -256,19 +256,19 @@ when isMainModule:
         max_results=yaml_settings.max_results)
       echo banner
       case opts.operation
-      of "harvest_metadata":
+      of "harvest_datastream":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
-          let test = fedora_connection.harvest_metadata(opts.dsid)
+          let test = fedora_connection.harvest_datastream(opts.dsid)
           echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
-      of "harvest_metadata_no_pages":
+      of "harvest_datastream_no_pages":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
           echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
-          let test = fedora_connection.harvest_metadata_no_pages(opts.dsid)
+          let test = fedora_connection.harvest_datastream_no_pages(opts.dsid)
           echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "download_foxml":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":

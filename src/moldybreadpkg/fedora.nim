@@ -253,7 +253,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   stdout.write("]")
   stdout.flushFile()
 
-method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
+method harvest_datastream*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Populates results for a Fedora request.
   ##
   ## Examples:
@@ -262,14 +262,14 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   ##
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    fedora_connection.results = fedora_connection.populate_results()
-  ##    discard fedora_connection.harvest_metadata("DC")
+  ##    discard fedora_connection.harvest_datastream("DC")
   ##
   var
     pid: string
     successes, errors: seq[string]
     attempts: int
     bar = newProgressBar()
-  echo "\n\nHarvesting Metadata:\n"
+  echo fmt"{'\n'}{'\n'}Harvesting {datastream_id} datastreams:{'\n'}"
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -302,7 +302,7 @@ method determine_pages(this: FedoraRequest): seq[string] {. base .} =
     bar.increment()
   bar.finish()
 
-method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
+method harvest_datastream_no_pages*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
   ## Harvests metadata for matching objects unless its content model is a page.
   ##
   ## This method requires a datastream_id and downloads the metadata record if the object does not have an isMemberOf relationship.
@@ -313,14 +313,14 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   ##
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
   ##    fedora_connection.results = fedora_connection.populate_results()
-  ##    discard fedora_connection.harvest_metadata_no_pages("DC")
+  ##    discard fedora_connection.harvest_datastream_no_pages("DC")
   var
     not_pages = this.determine_pages()
     successes, errors: seq[string]
     pid: string
     attempts: int
     bar = newProgressBar()
-  echo "\n\nHarvesting Metadata:\n"
+  echo fmt"{'\n'}{'\n'}Harvesting {datastream_id} datastreams:{'\n'}"
   bar.start()
   for i in 1..len(not_pages):
     pid = not_pages[i-1]
