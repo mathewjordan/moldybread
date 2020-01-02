@@ -110,6 +110,18 @@ method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .}
   case $header["content-type"]
   of "application/xml", "text/xml", "application/rdf+xml":
     ".xml"
+  of "text/plain":
+    ".txt"
+  of "text/html":
+    ".html"
+  of "application/pdf":
+    ".pdf"
+  of "image/tiff":
+    ".tif"
+  of "image/jp2":
+    ".jp2"
+  of "image/jpeg":
+    ".jpg"
   else:
     ".bin"
 
