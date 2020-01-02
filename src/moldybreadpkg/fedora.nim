@@ -273,8 +273,9 @@ method harvest_metadata*(this: FedoraRequest, datastream_id="MODS"): Message {. 
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
-    let response = new_record.download(this.output_directory)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
+      response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -293,8 +294,9 @@ method determine_pages(this: FedoraRequest): seq[string] {. base .} =
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle{predicate}", pid: pid)
-    let response = new_record.check_if_page()
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle{predicate}", pid: pid)
+      response = new_record.check_if_page()
     if response:
       result.add(pid)
     bar.increment()
@@ -322,8 +324,9 @@ method harvest_metadata_no_pages*(this: FedoraRequest, datastream_id="MODS"): Me
   bar.start()
   for i in 1..len(not_pages):
     pid = not_pages[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
-    let response = new_record.download(this.output_directory)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid)
+      response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -358,8 +361,9 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
   bar.start()
   for i in 1..len(pids_to_update):
     pid = pids_to_update[i-1]
-    var new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
-    let response = new_record.modify_metadata_datastream(pid[0])
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
+      response = new_record.modify_metadata_datastream(pid[0])
     if response:
       successes.add(pid[1])
       discard gsearch_connection.update_solr_record(pid[1])
@@ -396,8 +400,9 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
-    let response = new_record.download(this.output_directory)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
+      response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -427,8 +432,9 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}?versionable={versionable}")
-    let response = new_record.put()
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}?versionable={versionable}")
+      response = new_record.put()
     if response:
       successes.add(pid)
     else:
@@ -460,8 +466,9 @@ method change_object_state*(this: FedoraRequest, state: string): Message {. base
     bar.start()
     for i in 1..len(this.results):
       pid = this.results[i-1]
-      let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}?state={state}")
-      let response = new_record.put()
+      let
+        new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}?state={state}")
+        response = new_record.put()
       if response:
         successes.add(pid)
       else:
@@ -494,8 +501,9 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
-    let response = new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid, dsid=dsid)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
+      response = new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid, dsid=dsid)
     if response:
       successes.add(pid)
     else:
@@ -555,8 +563,9 @@ method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. ba
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml", pid: pid)
-    let response = new_record.download(this.output_directory)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml", pid: pid)
+      response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
@@ -586,8 +595,9 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
-    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/content?asOfDateTime={date}", pid: pid)
-    let response = new_record.download(this.output_directory)
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/content?asOfDateTime={date}", pid: pid)
+      response = new_record.download(this.output_directory)
     if response:
       successes.add(pid)
     else:
