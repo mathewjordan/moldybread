@@ -194,7 +194,7 @@ when isMainModule:
   ##
   ## Example command:
   ##
-  ## .. code-bloc:: sh
+  ## .. code-block:: sh
   ##
   ##    moldybread -o find_objs_missing_dsid -n test -d MODS -y /full/path/to/my/yaml/file
   ##
