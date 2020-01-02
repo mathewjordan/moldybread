@@ -26,7 +26,7 @@ suite "Test Fedora Connection Methods":
     doAssert(typeof(fedora_connection.populate_results()) is seq[string])
 
   test "Harvest Metadata":
-    doAssert(typeof(fedora_connection.harvest_metadata("DC")) is Message)
+    doAssert(typeof(fedora_connection.harvest_datastream("DC")) is Message)
 
   test "Harvest Metadata No Pages":
-    doAssert(typeof(fedora_connection.harvest_metadata_no_pages("DC")) is Message)
+    doAssert(typeof(fedora_connection.harvest_datastream_no_pages("DC")) is Message)
