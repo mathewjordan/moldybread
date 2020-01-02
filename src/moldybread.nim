@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os
 
 type
   ConfigSettings = object
@@ -229,7 +229,7 @@ when isMainModule:
                        |___/     
  
  """
-  var p = newParser("Moldy Bread"):
+  var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
     option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
@@ -243,9 +243,11 @@ when isMainModule:
     option("-dt", "--datetime", help="Use to specify date when a date is required (yyyy-MM-dd).", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
+  var yaml_settings = read_yaml_config(fmt"{getCurrentDir()}/config/config.yml")
   block main_control:
     try:
-      var yaml_settings = read_yaml_config(opts.yaml_path)
+      if opts.yaml_path != "":
+        yaml_settings = read_yaml_config(opts.yaml_path)
       let fedora_connection = initFedoraRequest(
         url=yaml_settings.base_url, 
         auth=(yaml_settings.username, yaml_settings.password), 
