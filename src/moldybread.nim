@@ -220,6 +220,17 @@ when isMainModule:
   ##
   ##    moldybread -o get_datastream_at_date -n test -d RELS-EXT -dt 2019-12-19 -y /full/path/to/my/yaml/file.yml
   ##
+  ## Validate Checksums for Datastream
+  ## =================================
+  ##
+  ## You can check whether the current checksum of a datastream for an object matches the original checksum.  If not, the objects with bad datastreams are listed:
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o validate_checksums -n test -d OBJ -y /full/path/to/my/yaml/file.yml
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -231,7 +242,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums"])
     option("-d", "--dsid", help="Specify datastream id.", default="MODS")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -341,6 +352,18 @@ when isMainModule:
             fedora_connection.results = fedora_connection.populate_results()
             let test = fedora_connection.get_datastream_at_date(opts.dsid, opts.datetime)
             echo fmt"{'\n'}Successfully downloaded the {opts.dsid} at {opts.datetime} of {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
+          except ValueError:
+            echo "Must set -d or --dsid to select datastream."
+      of "validate_checksums":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          try:
+            fedora_connection.results = fedora_connection.populate_results()
+            let test = fedora_connection.validate_checksums(opts.dsid)
+            echo fmt"{'\n'}{len(test.successes)} objects had valid checksums for their {opts.dsid} datastream. {len(test.errors)} objects had invalid checksums on their {opts.dsid} datastream."
+            if len(test.errors) > 0:
+              echo test.errors
           except ValueError:
             echo "Must set -d or --dsid to select datastream."
       of "update_metadata":

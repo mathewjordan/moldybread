@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper
 
 type
   FedoraRequest* = ref object
@@ -141,12 +141,12 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
   else:
     false
 
-method get(this: FedoraRecord): bool {. base .} =
+method get(this: FedoraRecord): string {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
-    true
+    response.body
   else:
-    false
+    ""
 
 method get_history(this: FedoraRecord): seq[string] {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
@@ -534,7 +534,7 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
   for i in 1..len(this.results):
     pid = this.results[i-1]
     let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}")
-    if new_record.get():
+    if new_record.get() != "":
       successes.add(pid)
     else:
       errors.add(pid)
@@ -601,6 +601,39 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
     if response:
       successes.add(pid)
     else:
+      errors.add(pid)
+    attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .} =
+  ## Checks if the current checksum of datastreams in a result set matches the checksum of the same datastream on ingest.
+  ##
+  ## If so, the check is considered a success.  If not, the check is an error.  If a datastream is not found for an object, niether a success or error is registered.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.validate_checksums("MODS").successes
+  ##
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}?validateChecksum=true&format=xml", pid: pid)
+      response = new_record.get()
+    if response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]):
+      successes.add(pid)
+    elif response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]) == false:
       errors.add(pid)
     attempts += 1
     bar.increment()
