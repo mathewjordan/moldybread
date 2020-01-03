@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, typetraits
 
 type
   FedoraRequest* = ref object
@@ -542,6 +542,37 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
     bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method get_datastreams*(this: FedoraRequest, profiles=true, as_of_date=getTime()): seq[(string, seq[TaintedString])] {. base .} =
+  ## Returns a sequence of tuples with the pid and a sequence of datastreams that belong to it.
+  ##
+  ## Optionally, you can specify whether you want an entire datastream profile returned (defaults to true) or just the datastream id and
+  ## a date for which you want to base the query on (defaults to now).  Use `yyyy-MM-dd` or `yyyy-MM-ddTHH:mm:ssZ`.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.get_datastreams(profiles=true)
+  ##
+  var
+    attempts: int
+    pid: string
+    bar = newProgressBar()
+  echo fmt"{'\n'}Finding all datastreams for objects in result set."
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams?profiles={profiles}&asOfDateTime={as_of_date}")
+    if new_record.get() != "":
+      let 
+        datastreams = parse_data(new_record.get(), "datastreamProfile").filterIt(it.startsWith("datastreamProfile")).mapIt($it.split(" ")[1].split("=")[1].replace("\"", ""))
+      result.add((pid, datastreams))
+    attempts+=1
+    bar.increment()
+  bar.finish()
 
 method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. base .} =
   ## Serializes the history of a datastream for a results set to disk.
