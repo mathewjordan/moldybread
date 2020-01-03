@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, typetraits
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils
 
 type
   FedoraRequest* = ref object
@@ -656,6 +656,7 @@ method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .
     attempts: int
     pid: string
     bar = newProgressBar()
+  echo fmt"{'\n'}{'\n'}Validating checksums for the {dsid} datastream for matching objects.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -667,6 +668,29 @@ method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .
     elif response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]) == false:
       errors.add(pid)
     attempts += 1
+    bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
+method validate_checksums*(this: FedoraRequest): Message {. base .} =
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar()
+  let datastream_report = this.get_datastreams()
+  echo fmt"{'\n'}{'\n'}Validating checksums for each datastream for matching objects.{'\n'}"
+  bar.start()
+  for i in 1..len(datastream_report):
+    for datastream in datastream_report[i-1][1]:
+      let
+        new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{datastream_report[i-1][0]}/datastreams/{datastream}?validateChecksum=true&format=xml", pid: pid)
+        response = new_record.get()
+      if response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]):
+        successes.add(fmt"{datastream_report[i-1][0]}--{datastream}")
+      elif response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]) == false:
+        errors.add(fmt"{datastream_report[i-1][0]}--{datastream}")
+        attempts += 1
     bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
