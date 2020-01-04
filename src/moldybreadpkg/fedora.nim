@@ -460,7 +460,7 @@ method change_object_state*(this: FedoraRequest, state: string): Message {. base
     attempts: int
     pid: string
   let accepted = ["A", "I", "D"]
-  echo fmt"{'\n'}{'\n'}Changing state of resluts to {state}.{'\n'}"
+  echo fmt"{'\n'}{'\n'}Changing state of results to {state}.{'\n'}"
   if state in accepted:
     var bar = newProgressBar()
     bar.start()
@@ -673,6 +673,21 @@ method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .
   Message(errors: errors, successes: successes, attempts: attempts)
 
 method validate_checksums*(this: FedoraRequest): Message {. base .} =
+  ## Checks if the current checksum of all datastreams belonging to a particular object matches the checksum of the datastream when it was ingested.
+  ##
+  ## If the validation is confirmed, the pid and datastream are appended to the successes sequence of the result Message.
+  ## If the validation fails, the pid and datastream are appended to the errors sequence of the result Message.
+  ##
+  ## NOTE: By design, this method only checks the current version of the datastream and ignores previous versions.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.validate_checksums().errors
+  ##
   var
     successes, errors: seq[string]
     attempts: int
