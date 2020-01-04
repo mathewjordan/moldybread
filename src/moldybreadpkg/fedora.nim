@@ -709,3 +709,25 @@ method validate_checksums*(this: FedoraRequest): Message {. base .} =
     bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method find_distinct_datastreams*(this: FedoraRequest): seq[string] {. base .} =
+  ## Filters distinct datastreams from all objects in a result set.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.find_distinct_datastreams()
+  ##
+  var bar = newProgressBar()
+  let datastream_report = this.get_datastreams()
+  echo "\n\nFiltering unique datastreams from result set.\n"
+  bar.start()
+  for i in 1..len(datastream_report):
+    for datastream in datastream_report[i-1][1]:
+      if datastream notin result:
+        result.add(datastream)
+    bar.increment()
+  bar.finish()
