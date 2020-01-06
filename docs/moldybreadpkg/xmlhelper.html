@@ -16,7 +16,7 @@
 <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
 
 <!-- CSS -->
-<title>MOLDY BREAD</title>
+<title>xmlhelper</title>
 <style type="text/css" >
 /*
 Stylesheet for use with Docutils/rst2html.
@@ -804,7 +804,7 @@ function main() {
 <body onload="main()">
 <div class="document" id="documentId">
   <div class="container">
-    <h1 class="title">MOLDY BREAD</h1>
+    <h1 class="title">xmlhelper</h1>
     <div class="row">
   <div class="three columns">
   <div id="global-links">
@@ -823,26 +823,12 @@ function main() {
     </select>
   </div>
   <ul class="simple simple-toc" id="toc-list">
-<li><a class="reference" id="defining-a-configdotyml_toc" href="#defining-a-configdotyml">Defining a config.yml</a></li>
-<li><a class="reference" id="command-line-parsing_toc" href="#command-line-parsing">Command Line Parsing</a></li>
-<li><a class="reference" id="populating-results_toc" href="#populating-results">Populating Results</a></li>
-<li><a class="reference" id="harvest-datastream-including-metadata_toc" href="#harvest-datastream-including-metadata">Harvest Datastream (including metadata)</a></li>
-<li><a class="reference" id="harvest-datastream-unless-it-s-a-part-of-a-page_toc" href="#harvest-datastream-unless-it-s-a-part-of-a-page">Harvest Datastream Unless It's a part of a Page</a></li>
-<li><a class="reference" id="download-foxml-record_toc" href="#download-foxml-record">Download FOXML Record</a></li>
-<li><a class="reference" id="update-metadata_toc" href="#update-metadata">Update Metadata</a></li>
-<li><a class="reference" id="update-metadata-and-delete-old-versions_toc" href="#update-metadata-and-delete-old-versions">Update Metadata and Delete Old Versions</a></li>
-<li><a class="reference" id="version-datastream_toc" href="#version-datastream">Version Datastream</a></li>
-<li><a class="reference" id="change-object-state_toc" href="#change-object-state">Change Object State</a></li>
-<li><a class="reference" id="purge-old-versions-of-a-datastream_toc" href="#purge-old-versions-of-a-datastream">Purge Old Versions of a Datastream</a></li>
-<li><a class="reference" id="find-objects-missing-a-particular-datastream_toc" href="#find-objects-missing-a-particular-datastream">Find Objects Missing a Particular Datastream</a></li>
-<li><a class="reference" id="download-datastream-histories-as-xml_toc" href="#download-datastream-histories-as-xml">Download Datastream Histories as XML</a></li>
-<li><a class="reference" id="download-datastream-at-date_toc" href="#download-datastream-at-date">Download Datastream at Date</a></li>
-<li><a class="reference" id="validate-checksums_toc" href="#validate-checksums">Validate Checksums</a></li>
-<li><a class="reference" id="find-unique-datastreams_toc" href="#find-unique-datastreams">Find Unique Datastreams</a></li>
 <li>
-  <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
+  <a class="reference reference-toplevel" href="#12" id="62">Procs</a>
   <ul class="simple simple-toc-section">
-    
+      <li><a class="reference" href="#parse_data%2Cstring%2Cstring"
+    title="parse_data(response, element: string): seq[string]"><wbr />parse_<wbr />data<span class="attachedType"></span></a></li>
+
   </ul>
 </li>
 
@@ -852,91 +838,45 @@ function main() {
   <div class="nine columns" id="content">
   <div id="tocRoot"></div>
   
-  <p class="module-desc"><p>This package allows users to interact with a Fedora 3.8 repository via the CLI.</p>
-<p>The instructions here assume you are working with a compiled version of Moldy Bread. See installation instructions or package info if you are looking for something else.</p>
-
-<h1><a class="toc-backref" id="defining-a-configdotyml" href="#defining-a-configdotyml">Defining a config.yml</a></h1><p>Make a copy of default_config.yml as config.yml and set settings appropriately. Currently, this is the only way to pass authentication information for Fedora and Gsearch.</p>
-<p>You can store this config file anywhere that you have read permissions.  Use the full path to the file in commands like in the examples below.</p>
-
-<h1><a class="toc-backref" id="command-line-parsing" href="#command-line-parsing">Command Line Parsing</a></h1><p>When in doubt, use help:</p>
-<pre class="listing">
-moldybread -h</pre>
-<h1><a class="toc-backref" id="populating-results" href="#populating-results">Populating Results</a></h1><p>Result lists can be populated in several ways.</p>
-<p>First, if you specify dublincore fields and matching strings with the <tt class="docutils literal"><span class="pre">-dc</span></tt> flag, results will be populated based on their metadata records. Each DublinCore field should be separated from its matching string with a colon (:).  Each pair of fields and values should be separated with a semicolon (;). Do not include a namespace.</p>
-<pre class="listing">
-moldybread -dc &quot;title:Pencil;contributor:Wiley&quot;</pre><p>Next, you can populate results based on a value in a PID or namespace with the <tt class="docutils literal"><span class="pre">-n</span></tt> flag.  This value will normally be the namespace, but it doesn't have to be.  It can specify any part of the pid.</p>
-<pre class="listing">
-moldybread -n test</pre><p>Finally, you can populate results based on terms that appear anywhere in the metadata record with the <tt class="docutils literal"><span class="pre">-t</span></tt> flag.</p>
-<pre class="listing">
-moldybread -t Vancouver</pre>
-<h1><a class="toc-backref" id="harvest-datastream-including-metadata" href="#harvest-datastream-including-metadata">Harvest Datastream (including metadata)</a></h1><p>Datastreams can be harvested by supplying a datastream id (MODS by default) and a namespace. This can be used for metadata files or any other datastream.</p>
-<pre class="listing">
-moldybread -o harvest_datastream -d MODS -n test -y /full/path/to/my/yaml/file</pre><p>Datastreams can also be harvested by supplying a datastream id (MODS by default) and a string of dc fields with associated strings.</p>
-<pre class="listing">
-moldybread -o harvest_datastream -d MODS -dc &quot;title:Pencil;contributor:Wiley&quot; -y /full/path/to/my/yaml/config/file</pre><p>Finally, you can also harvest datastreams based on a keyword value.</p>
-<pre class="listing">
-moldybread -o harvest_datastream -d MODS -t Vancouver -y /full/path/to/my/yaml/config/file</pre>
-<h1><a class="toc-backref" id="harvest-datastream-unless-it-s-a-part-of-a-page" href="#harvest-datastream-unless-it-s-a-part-of-a-page">Harvest Datastream Unless It's a part of a Page</a></h1><p>Most of the time, we don't want the metadata record for a page from a book collection. If we want to make sure we don't get those, we need a slightly different operation. This can be used for any datastream.</p>
-<pre class="listing">
-moldybread -o harvest_datastream_no_pages -d MODS -n test -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="download-foxml-record" href="#download-foxml-record">Download FOXML Record</a></h1><p>FOXML records can be downloaded by supplying a namespace.</p>
-<pre class="listing">
-moldybread -o download_foxml -n test -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="update-metadata" href="#update-metadata">Update Metadata</a></h1><p>You can update metadata from a directory. The files must end in .xml and be named according to a PID (i.e. test:1.xml).</p>
-<p>Example layout:</p>
-<pre class="listing">
-|-- updates
-    |-- test:1.xml
-    |-- test:2.xml
-    |-- test:3.xml</pre><p>Example command:</p>
-<pre class="listing">
-moldybread -o update_metadata -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file</pre><p>If your request was successful, you should see a list of PIDS that were successfully updated.</p>
-<p><strong>NOTE</strong>: This operation automatically updates SOLR with Gsearch.</p>
-
-<h1><a class="toc-backref" id="update-metadata-and-delete-old-versions" href="#update-metadata-and-delete-old-versions">Update Metadata and Delete Old Versions</a></h1><p>If you don't want to keep the old versions of the datstream you're updating, you can purge them.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o update_metadata_and_delete_old_versions -p /home/mark/nim_projects/moldybread/updates -d MODS -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="version-datastream" href="#version-datastream">Version Datastream</a></h1><p>Set whether a datastream should be versioned or not.</p>
-<p><strong>Note</strong>: parseBool is used on the value associated wit -v / --versionable. Because of this, these values are true: <tt class="docutils literal"><span class="pre">y</span></tt>, <tt class="docutils literal"><span class="pre">yes</span></tt>, <tt class="docutils literal"><span class="pre">true</span></tt>, <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">on</span></tt>. Similarly, these values are false: <tt class="docutils literal"><span class="pre">n</span></tt>, <tt class="docutils literal"><span class="pre">no</span></tt>, <tt class="docutils literal"><span class="pre">false</span></tt>, <tt class="docutils literal"><span class="pre">0</span></tt>, <tt class="docutils literal"><span class="pre">off</span></tt>.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o version_datastream -n test -d MODS -v false -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="change-object-state" href="#change-object-state">Change Object State</a></h1><p>Change the state of all objects in a result set to [<tt class="docutils literal"><span class="pre">A</span></tt>]ctive, [<tt class="docutils literal"><span class="pre">I</span></tt>]nactive, or [<tt class="docutils literal"><span class="pre">D</span></tt>]eleted. Defaults to <tt class="docutils literal"><span class="pre">A</span></tt>.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o change_object_state -n test -s I -v false -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="purge-old-versions-of-a-datastream" href="#purge-old-versions-of-a-datastream">Purge Old Versions of a Datastream</a></h1><p>Purges all by the current version of a datastream.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o purge_old_versions -n test -d MODS -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="find-objects-missing-a-particular-datastream" href="#find-objects-missing-a-particular-datastream">Find Objects Missing a Particular Datastream</a></h1><p>Finds all objects in a results set that are missing a particular datastream.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o find_objs_missing_dsid -n test -d MODS -y /full/path/to/my/yaml/file</pre>
-<h1><a class="toc-backref" id="download-datastream-histories-as-xml" href="#download-datastream-histories-as-xml">Download Datastream Histories as XML</a></h1><p>Serializes to disk the history of a specific datatream as XML for all results in a result set.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o get_datastream_history -n test -d RELS-EXT -y /full/path/to/my/yaml/file.yml</pre>
-<h1><a class="toc-backref" id="download-datastream-at-date" href="#download-datastream-at-date">Download Datastream at Date</a></h1><p>Serializes to disk the a datatream at a specific date for all results in a result set.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o get_datastream_at_date -n test -d RELS-EXT -dt 2019-12-19 -y /full/path/to/my/yaml/file.yml</pre>
-<h1><a class="toc-backref" id="validate-checksums" href="#validate-checksums">Validate Checksums</a></h1><p>You can check whether the current checksum of a datastream for an object matches the original checksum.  If not, the objects with bad datastreams are listed:</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o validate_checksums -n test -d OBJ -y /full/path/to/my/yaml/file.yml</pre><p>Or, you can check whether the current checksum for all current versions of datastreams belonging to an object match the checksum of that datastream on ingest.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o validate_checksums -n test -y /full/path/to/my/yaml/file.yml</pre>
-<h1><a class="toc-backref" id="find-unique-datastreams" href="#find-unique-datastreams">Find Unique Datastreams</a></h1><p>You can get a list of unique datastreams from objects across a result set.</p>
-<p>Example command:</p>
-<pre class="listing">
-moldybread -o find_distinct_datastreams -n test -y /full/path/to/my/yaml/file.yml</pre></p>
-  <div class="section" id="6">
-<h1><a class="toc-backref" href="#6">Imports</a></h1>
+  <p class="module-desc"></p>
+  <div class="section" id="12">
+<h1><a class="toc-backref" href="#12">Procs</a></h1>
 <dl class="item">
-<a class="reference external" href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>
+<a id="parse_data,string,string"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#parse_data%2Cstring%2Cstring"><span class="Identifier">parse_data</span></a><span class="Other">(</span><span class="Identifier">response</span><span class="Other">,</span> <span class="Identifier">element</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span>
+    <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">XmlError</span><span class="Other">,</span> <span class="Identifier">RegexError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Takes XML as a string and an element name and returns the text nodes of each element as a sequence of strings.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span>
+      <span class="Identifier">some_xml</span> <span class="Operator">=</span> <span class="LongStringLit">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;datastreamProfile  xmlns=&quot;http://www.fedora.info/definitions/1/0/management/&quot;  xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.fedora.info/definitions/1/0/management/ http://www.fedora.info/definitions/1/0/datastreamProfile.xsd&quot; pid=&quot;test:9&quot; dsID=&quot;MODS&quot;&gt;&lt;dsLabel&gt;MODS Record&lt;/dsLabel&gt;
+      &lt;dsVersionID&gt;MODS.5&lt;/dsVersionID&gt;
+      &lt;dsCreateDate&gt;2019-12-19T02:50:24.322Z&lt;/dsCreateDate&gt;
+      &lt;dsState&gt;A&lt;/dsState&gt;
+      &lt;dsMIME&gt;application/xml&lt;/dsMIME&gt;
+      &lt;dsFormatURI&gt;&lt;/dsFormatURI&gt;
+      &lt;dsControlGroup&gt;X&lt;/dsControlGroup&gt;
+      &lt;dsSize&gt;178&lt;/dsSize&gt;
+      &lt;dsVersionable&gt;true&lt;/dsVersionable&gt;
+      &lt;dsInfoType&gt;&lt;/dsInfoType&gt;
+      &lt;dsLocation&gt;test:9+MODS+MODS.5&lt;/dsLocation&gt;
+      &lt;dsLocationType&gt;&lt;/dsLocationType&gt;
+      &lt;dsChecksumType&gt;SHA-1&lt;/dsChecksumType&gt;
+      &lt;dsChecksum&gt;f2e60f8860158d6d175bdd3c2710928c79a5d024&lt;/dsChecksum&gt;
+      &lt;dsChecksumValid&gt;true&lt;/dsChecksumValid&gt;
+      &lt;/datastreamProfile&gt;
+      &quot;&quot;&quot;</span>
+  <span class="Identifier">an_element</span> <span class="Operator">=</span> <span class="StringLit">&quot;dsChecksumValid&quot;</span>
+<span class="Identifier">assert</span> <span class="Identifier">parsedata</span><span class="Punctuation">(</span><span class="Identifier">some_xml</span><span class="Punctuation">,</span> <span class="Identifier">an_element</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;true&quot;</span><span class="Punctuation">]</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/995d9bba3253c12d97abf0d0aa600a5a3fbfde99/src/moldybreadpkg/xmlhelper.nim#L3"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/xmlhelper.nim#L3" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+
 </dl></div>
 
   </div>

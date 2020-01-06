@@ -805,7 +805,7 @@ function main() {
 <div class="document" id="documentId">
   <div class="container">
     <h1 class="title">Index</h1>
-    Documents: <a href="moldybread.html">MOLDY BREAD</a>.<br/><p />Modules: <a href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>.<br/><p /><h2>API symbols</h2>
+    Documents: <a href="moldybread.html">MOLDY BREAD</a>.<br/><p />Modules: <a href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>, <a href="moldybreadpkg/xmlhelper.html">moldybreadpkg/xmlhelper</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="change_object_state" href="#change_object_state"><span>change_object_state:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: change_object_state(this: FedoraRequest; state: string): Message" href="moldybreadpkg/fedora.html#change_object_state.e%2CFedoraRequest%2Cstring">fedora: change_object_state(this: FedoraRequest; state: string): Message</a></li>
@@ -818,6 +818,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="fedora: FedoraRequest" href="moldybreadpkg/fedora.html#FedoraRequest">fedora: FedoraRequest</a></li>
           </ul></dd>
+<dt><a name="find_distinct_datastreams" href="#find_distinct_datastreams"><span>find_distinct_datastreams:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: find_distinct_datastreams(this: FedoraRequest): seq[string]" href="moldybreadpkg/fedora.html#find_distinct_datastreams.e%2CFedoraRequest">fedora: find_distinct_datastreams(this: FedoraRequest): seq[string]</a></li>
+          </ul></dd>
 <dt><a name="find_objects_missing_datastream" href="#find_objects_missing_datastream"><span>find_objects_missing_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#find_objects_missing_datastream.e%2CFedoraRequest%2Cstring">fedora: find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message</a></li>
@@ -829,6 +833,12 @@ function main() {
 <dt><a name="get_datastream_history" href="#get_datastream_history"><span>get_datastream_history:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: get_datastream_history(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#get_datastream_history.e%2CFedoraRequest%2Cstring">fedora: get_datastream_history(this: FedoraRequest; dsid: string): Message</a></li>
+          </ul></dd>
+<dt><a name="get_datastreams" href="#get_datastreams"><span>get_datastreams:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: get_datastreams(this: FedoraRequest; profiles = true; as_of_date = getTime()): seq[
+    (string, seq[TaintedString])]" href="moldybreadpkg/fedora.html#get_datastreams.e%2CFedoraRequest">fedora: get_datastreams(this: FedoraRequest; profiles = true; as_of_date = getTime()): seq[
+    (string, seq[TaintedString])]</a></li>
           </ul></dd>
 <dt><a name="harvest_datastream" href="#harvest_datastream"><span>harvest_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -850,6 +860,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="fedora: Message" href="moldybreadpkg/fedora.html#Message">fedora: Message</a></li>
           </ul></dd>
+<dt><a name="parse_data" href="#parse_data"><span>parse_data:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="xmlhelper: parse_data(response, element: string): seq[string]" href="moldybreadpkg/xmlhelper.html#parse_data%2Cstring%2Cstring">xmlhelper: parse_data(response, element: string): seq[string]</a></li>
+          </ul></dd>
 <dt><a name="populate_results" href="#populate_results"><span>populate_results:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: populate_results(this: FedoraRequest): seq[string]" href="moldybreadpkg/fedora.html#populate_results.e%2CFedoraRequest">fedora: populate_results(this: FedoraRequest): seq[string]</a></li>
@@ -864,6 +878,12 @@ function main() {
                 gsearch_auth: (string, string); clean_up = false): Message" href="moldybreadpkg/fedora.html#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C">fedora: update_metadata(this: FedoraRequest; datastream_id, directory: string;
                 gsearch_auth: (string, string); clean_up = false): Message</a></li>
           </ul></dd>
+<dt><a name="validate_checksums" href="#validate_checksums"><span>validate_checksums:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: validate_checksums(this: FedoraRequest): Message" href="moldybreadpkg/fedora.html#validate_checksums.e%2CFedoraRequest">fedora: validate_checksums(this: FedoraRequest): Message</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="fedora: validate_checksums(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#validate_checksums.e%2CFedoraRequest%2Cstring">fedora: validate_checksums(this: FedoraRequest; dsid: string): Message</a></li>
+          </ul></dd>
 <dt><a name="version_datastream" href="#version_datastream"><span>version_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: version_datastream(this: FedoraRequest; dsid: string; versionable: bool): Message" href="moldybreadpkg/fedora.html#version_datastream.e%2CFedoraRequest%2Cstring%2Cbool">fedora: version_datastream(this: FedoraRequest; dsid: string; versionable: bool): Message</a></li>
@@ -873,7 +893,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2020-01-02 02:19:25 UTC</small>
+        <small>Made with Nim. Generated: 2020-01-06 01:46:36 UTC</small>
       </div>
     </div>
   </div>

@@ -10,5 +10,9 @@ version_datastream	moldybreadpkg/fedora.html#version_datastream.e,FedoraRequest,
 change_object_state	moldybreadpkg/fedora.html#change_object_state.e,FedoraRequest,string	fedora: change_object_state(this: FedoraRequest; state: string): Message	
 purge_old_versions_of_datastream	moldybreadpkg/fedora.html#purge_old_versions_of_datastream.e,FedoraRequest,string	fedora: purge_old_versions_of_datastream(this: FedoraRequest; dsid: string): Message	
 find_objects_missing_datastream	moldybreadpkg/fedora.html#find_objects_missing_datastream.e,FedoraRequest,string	fedora: find_objects_missing_datastream(this: FedoraRequest; dsid: string): Message	
+get_datastreams	moldybreadpkg/fedora.html#get_datastreams.e,FedoraRequest	fedora: get_datastreams(this: FedoraRequest; profiles = true; as_of_date = getTime()): seq[\n    (string, seq[TaintedString])]	
 get_datastream_history	moldybreadpkg/fedora.html#get_datastream_history.e,FedoraRequest,string	fedora: get_datastream_history(this: FedoraRequest; dsid: string): Message	
 get_datastream_at_date	moldybreadpkg/fedora.html#get_datastream_at_date.e,FedoraRequest,string,string	fedora: get_datastream_at_date(this: FedoraRequest; dsid: string; date: string): Message	
+validate_checksums	moldybreadpkg/fedora.html#validate_checksums.e,FedoraRequest,string	fedora: validate_checksums(this: FedoraRequest; dsid: string): Message	
+validate_checksums	moldybreadpkg/fedora.html#validate_checksums.e,FedoraRequest	fedora: validate_checksums(this: FedoraRequest): Message	
+find_distinct_datastreams	moldybreadpkg/fedora.html#find_distinct_datastreams.e,FedoraRequest	fedora: find_distinct_datastreams(this: FedoraRequest): seq[string]	
