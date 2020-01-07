@@ -376,9 +376,8 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
       new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
       response = new_record.modify_metadata_datastream(pid[0])
     if response:
-      successes.add(pid[1])
       discard gsearch_connection.update_solr_record(pid[1])
-      if clean_up:
+      if clean_up == true:
         new_record.uri = fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}/history?format=xml"
         discard new_record.clean_up_old_versions(fedora_base_url=this.base_url, pid=pid[1], dsid=datastream_id)
       successes.add(pid[1])
