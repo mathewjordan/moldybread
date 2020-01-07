@@ -31,8 +31,8 @@ suite "Test Fedora Connection Methods":
   test "Harvest Metadata No Pages":
     doAssert(typeof(fedora_connection.harvest_datastream_no_pages("DC")) is Message)
 
-suite "Test XML Helper":
-  echo "XML Helper Tests"
+suite "Parse Data XML Helper":
+  echo "Parse Data XML Helper Tests"
 
   setup:
     let
@@ -57,3 +57,25 @@ suite "Test XML Helper":
 
   test "parse_data works as expected":
     assert parse_data(some_xml, an_element) == @["true"]
+
+suite "Get Attribute of Elements Test":
+  echo "Get Attribute of Elements"
+
+  setup:
+    let
+      some_xml = """<rdf:RDF xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:islandora="http://islandora.ca/ontology/relsext#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about="info:fedora/test:6">
+        <islandora:isPageOf rdf:resource="info:fedora/test:3"></islandora:isPageOf>
+        <islandora:isSequenceNumber>2</islandora:isSequenceNumber>
+        <islandora:isPageNumber>2</islandora:isPageNumber>
+        <islandora:isSection>1</islandora:isSection>
+        <fedora:isMemberOf rdf:resource="info:fedora/test:3"></fedora:isMemberOf>
+        <fedora-model:hasModel rdf:resource="info:fedora/islandora:pageCModel"></fedora-model:hasModel>
+        <islandora:generate_ocr>TRUE</islandora:generate_ocr>
+        </rdf:Description>
+        </rdf:RDF>"""
+      an_element = "fedora-model:hasModel"
+      an_attribute = "rdf:resource"
+
+  test "get_attribute_of_element works as expected":
+    assert get_attribute_of_element(some_xml, an_element, an_attribute) == @["info:fedora/islandora:pageCModel"]

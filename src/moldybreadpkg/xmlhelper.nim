@@ -35,3 +35,32 @@ proc parse_data*(response, element: string): seq[string] =
     let value = node.replace("/", "").replace(fmt"{element}>", "")
     if len(value) > 0:
       result.add(value)
+
+proc get_attribute_of_element*(response, element, attribute: string): seq[string] =
+  ## Terrible code to try to find matching attribute values for nodes in a string of XML.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##     let
+  ##       some_xml = """<rdf:RDF xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:islandora="http://islandora.ca/ontology/relsext#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  ##         <rdf:Description rdf:about="info:fedora/test:6">
+  ##         <islandora:isPageOf rdf:resource="info:fedora/test:3"></islandora:isPageOf>
+  ##         <islandora:isSequenceNumber>2</islandora:isSequenceNumber>
+  ##         <islandora:isPageNumber>2</islandora:isPageNumber>
+  ##         <islandora:isSection>1</islandora:isSection>
+  ##         <fedora:isMemberOf rdf:resource="info:fedora/test:3"></fedora:isMemberOf>
+  ##         <fedora-model:hasModel rdf:resource="info:fedora/islandora:pageCModel"></fedora-model:hasModel>
+  ##         <islandora:generate_ocr>TRUE</islandora:generate_ocr>
+  ##         </rdf:Description>
+  ##         </rdf:RDF>"""
+  ##       an_element = "fedora-model:hasModel"
+  ##       an_attribute = "rdf:resource"
+  ##     assert get_attribute_of_element(some_xml, an_element, an_attribute) == @["info:fedora/islandora:pageCModel"]
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // element)
+  for node in split(results, '<'):
+    if attribute in node:
+      result.add(node.split(attribute)[1].replace("=\"", "").replace("\" />", "").replace("\"/>", ""))
