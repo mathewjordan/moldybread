@@ -7,10 +7,8 @@ Moldy Bread Change Log
 
 **Bug Fixes**:
 
-* Progress bars did not really work in production.  This was due to how the newProgressBar constructor was being called.  By default, the constructor sets the length
-of the bar to be 100, but for us this may be much bigger or much smaller. This has been addressed and should scale and tick appropriately.
-* Update metadata did not respect whether or not a datastream was verisoned.  Because of this, any update on an unversioned datastream would switch the datastream
-back to being versionable.  This has been addressed.
+* Progress bars did not really work in production.  This was due to how the newProgressBar constructor was being called.  By default, the constructor sets the length of the bar to be 100, but for us this may be much bigger or much smaller. This has been addressed and should scale and tick appropriately.
+* Update metadata did not respect whether or not a datastream was verisoned.  Because of this, any update on an unversioned datastream would switch the datastream back to being versionable.  This has been addressed.
 * Update metadata was counting a successful update twice.  This has been addressed.
 
 0.1.2 - January 5, 2020
@@ -23,8 +21,7 @@ back to being versionable.  This has been addressed.
 
 **New Fedora Public Methods**:
 
-* FedoraRequest.get_datastream():  This returns a sequence of tuples with the pid (as a string) and a sequence of datastreams (as TaintedStrings) that belong to it. You can specify whether you want the entire datastream profile or just the datastreams (as HTML only) and specify a date that you want to base the request on. While
-this method is public, it is not currently called from the executable.
+* FedoraRequest.get_datastream():  This returns a sequence of tuples with the pid (as a string) and a sequence of datastreams (as TaintedStrings) that belong to it. You can specify whether you want the entire datastream profile or just the datastreams (as HTML only) and specify a date that you want to base the request on. While this method is public, it is not currently called from the executable.
 * FedoraRequest.validate_checksums(): See new operations for more details.
 * FedoraRequest.find_distinct_datastreams(): See new operations for more details.
 
@@ -59,4 +56,4 @@ this method is public, it is not currently called from the executable.
 0.1.0 - December 17, 2020
 =========================
 
-* Initial Release
+* Initial release.
