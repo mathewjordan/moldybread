@@ -433,6 +433,9 @@ when isMainModule:
         echo fmt"{'\n'}Successfully updated {len(operation.successes)} {opts.dsid} record(s).  Attempted but failed to update {len(operation.errors)} record(s)."
       else:
         echo "No matching operation."
+    except RangeError:
+      echo "No matching results in result set."
+      break
     except:
       echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use the full path for now until I figure out how relative pathing works."
       break
