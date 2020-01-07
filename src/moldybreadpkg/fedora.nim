@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math
 
 type
   FedoraRequest* = ref object
@@ -47,6 +47,10 @@ proc convert_dc_pairs_to_string(dc_pairs: string): string =
     let separated_values = pair.split(":")
     new_list.add(fmt"{separated_values[0]}%7E{separated_values[1]}")
   join(new_list, "%20")
+
+proc progress_prep(size: int): seq[int] =
+  for i in 1..100:
+    result.add(i*int(ceil(size/100)))
 
 proc initFedoraRequest*(url: string="http://localhost:8080", auth=("fedoraAdmin", "fedoraAdmin"), output_directory, dc_values, terms, pid_part="", max_results=100): FedoraRequest =
   ## Initializes new Fedora Request.
@@ -268,7 +272,8 @@ method harvest_datastream*(this: FedoraRequest, datastream_id="MODS"): Message {
     pid: string
     successes, errors: seq[string]
     attempts: int
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Harvesting {datastream_id} datastreams:{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -281,7 +286,8 @@ method harvest_datastream*(this: FedoraRequest, datastream_id="MODS"): Message {
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -289,7 +295,8 @@ method determine_pages(this: FedoraRequest): seq[string] {. base .} =
   let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
   var
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo "\n\nChecking for Pages:\n"
   bar.start()
   for i in 1..len(this.results):
@@ -299,7 +306,8 @@ method determine_pages(this: FedoraRequest): seq[string] {. base .} =
       response = new_record.check_if_page()
     if response:
       result.add(pid)
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
 
 method harvest_datastream_no_pages*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
@@ -319,7 +327,8 @@ method harvest_datastream_no_pages*(this: FedoraRequest, datastream_id="MODS"): 
     successes, errors: seq[string]
     pid: string
     attempts: int
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(not_pages), step=int(ceil(len(not_pages)/100)))
+  let ticks = progress_prep(len(not_pages))
   echo fmt"{'\n'}{'\n'}Harvesting {datastream_id} datastreams:{'\n'}"
   bar.start()
   for i in 1..len(not_pages):
@@ -332,7 +341,8 @@ method harvest_datastream_no_pages*(this: FedoraRequest, datastream_id="MODS"): 
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -351,12 +361,13 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
   ##
   var
     successes, errors: seq[string]
-    pids_to_update: seq[(string, string)]
+    pids_to_update: seq[(string, string)] = get_path_with_pid(directory, ".xml")
     attempts: int
     pid: (string, string)
-    bar = newProgressBar()
-  let gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
-  pids_to_update = get_path_with_pid(directory, ".xml")
+    bar = newProgressBar(total=len(pids_to_update), step=int(ceil(len(pids_to_update)/100)))
+  let
+    ticks = progress_prep(len(pids_to_update))
+    gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
   echo fmt"{'\n'}{'\n'}Updating {datastream_id} based on XML files in {directory}:{'\n'}"
   bar.start()
   for i in 1..len(pids_to_update):
@@ -374,7 +385,8 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
     else:
       errors.add(pid[1])
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -395,7 +407,8 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo "\n\nDownloading Foxml:\n"
   bar.start()
   for i in 1..len(this.results):
@@ -408,7 +421,8 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -427,7 +441,8 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Setting versioning on {dsid} to {versionable}.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -440,7 +455,8 @@ method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool)
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -462,7 +478,10 @@ method change_object_state*(this: FedoraRequest, state: string): Message {. base
   let accepted = ["A", "I", "D"]
   echo fmt"{'\n'}{'\n'}Changing state of results to {state}.{'\n'}"
   if state in accepted:
-    var bar = newProgressBar()
+    var
+      bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+    let
+      ticks = progress_prep(len(this.results))
     bar.start()
     for i in 1..len(this.results):
       pid = this.results[i-1]
@@ -474,7 +493,8 @@ method change_object_state*(this: FedoraRequest, state: string): Message {. base
       else:
         errors.add(pid)
       attempts += 1
-      bar.increment()
+      if i in ticks:
+        bar.increment()
     bar.finish()
     Message(errors: errors, successes: successes, attempts: attempts)
   else:
@@ -496,7 +516,8 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Purging old versions of {dsid}.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -509,7 +530,8 @@ method purge_old_versions_of_datastream*(this: FedoraRequest, dsid: string): Mes
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -528,7 +550,8 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Finding objects missing a {dsid} datastream.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -539,7 +562,8 @@ method find_objects_missing_datastream*(this: FedoraRequest, dsid: string): Mess
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -560,7 +584,8 @@ method get_datastreams*(this: FedoraRequest, profiles=true, as_of_date=getTime()
   var
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}Finding all datastreams for objects in result set."
   bar.start()
   for i in 1..len(this.results):
@@ -571,7 +596,8 @@ method get_datastreams*(this: FedoraRequest, profiles=true, as_of_date=getTime()
         datastreams = parse_data(new_record.get(), "datastreamProfile").filterIt(it.startsWith("datastreamProfile")).mapIt($it.split(" ")[1].split("=")[1].replace("\"", ""))
       result.add((pid, datastreams))
     attempts+=1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
 
 method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. base .} =
@@ -589,7 +615,8 @@ method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. ba
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Getting history of {dsid} for matching objects.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -602,7 +629,8 @@ method get_datastream_history*(this: FedoraRequest, dsid: string): Message {. ba
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -621,7 +649,8 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Getting {dsid} datastream at {date} for matching objects.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -634,7 +663,8 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
     else:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -655,7 +685,8 @@ method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
   echo fmt"{'\n'}{'\n'}Validating checksums for the {dsid} datastream for matching objects.{'\n'}"
   bar.start()
   for i in 1..len(this.results):
@@ -668,7 +699,8 @@ method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .
     elif response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]) == false:
       errors.add(pid)
     attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -692,8 +724,11 @@ method validate_checksums*(this: FedoraRequest): Message {. base .} =
     successes, errors: seq[string]
     attempts: int
     pid: string
-    bar = newProgressBar()
-  let datastream_report = this.get_datastreams()
+  let
+    datastream_report = this.get_datastreams()
+    ticks = progress_prep(len(datastream_report))
+  var
+    bar = newProgressBar(total=len(datastream_report), step=int(ceil(len(datastream_report)/100)))
   echo fmt"{'\n'}{'\n'}Validating checksums for each datastream for matching objects.{'\n'}"
   bar.start()
   for i in 1..len(datastream_report):
@@ -706,7 +741,8 @@ method validate_checksums*(this: FedoraRequest): Message {. base .} =
       elif response != "" and parseBool(parse_data(response, "dsChecksumValid")[0]) == false:
         errors.add(fmt"{datastream_report[i-1][0]}--{datastream}")
         attempts += 1
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
@@ -721,13 +757,17 @@ method find_distinct_datastreams*(this: FedoraRequest): seq[string] {. base .} =
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    echo fedora_connection.find_distinct_datastreams()
   ##
-  var bar = newProgressBar()
-  let datastream_report = this.get_datastreams()
+  let
+    datastream_report = this.get_datastreams()
+    ticks = progress_prep(len(datastream_report))
+  var
+    bar = newProgressBar(total=len(datastream_report), step=int(ceil(len(datastream_report)/100)))
   echo "\n\nFiltering unique datastreams from result set.\n"
   bar.start()
   for i in 1..len(datastream_report):
     for datastream in datastream_report[i-1][1]:
       if datastream notin result:
         result.add(datastream)
-    bar.increment()
+    if i in ticks:
+      bar.increment()
   bar.finish()
