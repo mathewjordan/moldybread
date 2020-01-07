@@ -11,6 +11,10 @@ Moldy Bread Change Log
 * Update metadata did not respect whether or not a datastream was verisoned.  Because of this, any update on an unversioned datastream would switch the datastream back to being versionable.  This has been addressed.
 * Update metadata was counting a successful update twice.  This has been addressed.
 
+**New Operations**:
+
+* Download all versions of a datastream with download all versions.  See docs for more details.
+
 0.1.2 - January 5, 2020
 =======================
 

@@ -157,6 +157,7 @@ method get_history(this: FedoraRecord): seq[string] {. base .} =
   if response.status == "200 OK":
     result = this.parse_string(response.body, "dsCreateDate")
   else:
+    echo this.uri
     result.add("")
 
 method check_if_page(this: FedoraRecord): bool {. base .} =
@@ -212,7 +213,6 @@ method is_it_versioned(this: FedoraRecord): bool {. base .} =
   else:
     true
   
-
 method update_solr_record(this: GsearchConnection, pid: string): bool {. base .} =
   let request = this.client.request(fmt"{this.base_url}/fedoragsearch/rest?operation=updateIndex&action=fromPid&value={pid}", httpMethod=HttpPost)
   if request.status == "200 OK":
@@ -586,7 +586,7 @@ method get_datastreams*(this: FedoraRequest, profiles=true, as_of_date=getTime()
   ##
   ## .. code-block:: nim
   ##
-  ##    let let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
   ##    fedora_connection.results = fedora_connection.populate_results()
   ##    echo fedora_connection.get_datastreams(profiles=true)
   ##
@@ -676,6 +676,45 @@ method get_datastream_at_date*(this: FedoraRequest, dsid: string, date: string):
       bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method download_all_versions_of_datastream*(this: FedoraRequest, dsid: string): Message {. base .} =
+  ## Downloads all versions of a specific datastream and names it as pid-datetime.extension (test:223-2020-01-07T17:25:32.085Z.xml).
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.download_all_versions_of_datastream("MODS").successes
+  ##
+  var
+    successes, errors: seq[string]
+    attempts: int
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
+  echo fmt"{'\n'}{'\n'}Downloading all {dsid} datastreams for matching objects.{'\n'}"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      history = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml")
+      versions = history.get_history()
+    for version in versions:
+      let
+        new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/content?asOfDateTime={version}", pid: pid)
+        response = new_record.download(this.output_directory, suffix=fmt"-{version}")
+      if response:
+        successes.add(pid)
+      else:
+        errors.add(pid)
+    attempts += 1
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
+
 
 method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .} =
   ## Checks if the current checksum of datastreams in a result set matches the checksum of the same datastream on ingest.
