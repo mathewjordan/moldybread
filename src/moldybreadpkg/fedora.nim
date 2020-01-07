@@ -205,6 +205,14 @@ method clean_up_old_versions(this: FedoraRecord, fedora_base_url, pid, dsid: str
   else:
     false
 
+method is_it_versioned(this: FedoraRecord): bool {. base .} =
+  let history = this.client.request(this.uri, httpMethod = HttpGet)
+  if history.status == "200 OK":
+    parseBool(this.parse_string(history.body, "dsVersionable")[0])
+  else:
+    true
+  
+
 method update_solr_record(this: GsearchConnection, pid: string): bool {. base .} =
   let request = this.client.request(fmt"{this.base_url}/fedoragsearch/rest?operation=updateIndex&action=fromPid&value={pid}", httpMethod=HttpPost)
   if request.status == "200 OK":
@@ -373,7 +381,9 @@ method update_metadata*(this: FedoraRequest, datastream_id, directory: string, g
   for i in 1..len(pids_to_update):
     pid = pids_to_update[i-1]
     let
-      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}")
+      history = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}/history?format=xml")
+      versioned = history.is_it_versioned()
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid[1]}/datastreams/{datastream_id}?versionable={versioned}")
       response = new_record.modify_metadata_datastream(pid[0])
     if response:
       discard gsearch_connection.update_solr_record(pid[1])
