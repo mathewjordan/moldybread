@@ -63,4 +63,4 @@ proc get_attribute_of_element*(response, element, attribute: string): seq[string
     results = $(xml_response // element)
   for node in split(results, '<'):
     if attribute in node:
-      result.add(node.split(attribute)[1].replace("=\"", "").replace("\" />", "").replace("\"/>", ""))
+      result.add(node.split(attribute)[1].split("\"")[1])
