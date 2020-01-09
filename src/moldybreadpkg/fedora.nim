@@ -129,6 +129,53 @@ method get_extension(this: FedoraRecord, header: HttpHeaders): string {. base .}
   else:
     ".bin"
 
+method content_model_lookup(this: FedoraRecord, pid: string): string {. base .} =
+  case pid
+  of "islandora:pageCModel":
+    "page"
+  of "islandora:sp_pdf":
+    "pdf"
+  of "islandora:entityCModel":
+    "entity"
+  of "islandora:bookCModel":
+    "book"
+  of "islandora:newspaperCModel":
+    "newspaper"
+  of "islandora:eventCModel":
+    "event"
+  of "islandora:placeCModel":
+    "place"
+  of "islandora:sp_basic_image":
+    "basic image"
+  of "islandora:newspaperPageCModel":
+    "newspaper page"
+  of "islandora:sp-audioCModel":
+    "audio file"
+  of "islandora:sp_disk_image":
+    "disk image"
+  of "islandora:personCModel":
+    "person"
+  of "islandora:sp_videoCModel":
+    "video"
+  of "islandora:newspaperIssueCModel":
+    "newspaper issue"
+  of "islandora:collectionCModel":
+    "collection"
+  of "islandora:organizationCModel":
+    "organization"
+  of "islandora:sp_web_archive":
+    "web archive"
+  of "islandora:compoundCModel":
+    "compound object"
+  of "islandora:sp_large_image_cmodel":
+    "large image"
+  of "ir:citationCModel":
+    "citation"
+  of "ir:thesisCModel":
+    "thesis"
+  else:
+    "unknown"
+
 method write_output(this: FedoraRecord, filename: string, contents: string, output_directory: string): string {. base .} =
   if not existsDir(output_directory):
     createDir(output_directory)
@@ -144,6 +191,13 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
     true
   else:
     false
+
+method get_content_model(this: FedoraRecord): string {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    this.content_model_lookup(get_attribute_of_element(response.body, "fedora-model:hasModel", "rdf:resource")[0].replace("info:fedora/", ""))
+  else:
+    "not found"
 
 method get(this: FedoraRecord): string {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
@@ -715,7 +769,6 @@ method download_all_versions_of_datastream*(this: FedoraRequest, dsid: string): 
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
 
-
 method validate_checksums*(this: FedoraRequest, dsid: string): Message {. base .} =
   ## Checks if the current checksum of datastreams in a result set matches the checksum of the same datastream on ingest.
   ##
@@ -816,6 +869,34 @@ method find_distinct_datastreams*(this: FedoraRequest): seq[string] {. base .} =
     for datastream in datastream_report[i-1][1]:
       if datastream notin result:
         result.add(datastream)
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+
+method get_content_models*(this: FedoraRequest): seq[(string, string)] {. base .} =
+  ## Returns a sequence of tuples with pids with a human readable version of its content model.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.get_content_models()
+  ##
+  var
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let
+    ticks = progress_prep(len(this.results))
+  echo "\n\nGetting Content Models of results set.\n"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/RELS-EXT/content", pid: pid)
+      content_model = new_record.get_content_model()
+    result.add((pid, content_model))
     if i in ticks:
       bar.increment()
   bar.finish()

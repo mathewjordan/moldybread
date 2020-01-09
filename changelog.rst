@@ -10,10 +10,15 @@ Moldy Bread Change Log
 * Progress bars did not really work in production.  This was due to how the newProgressBar constructor was being called.  By default, the constructor sets the length of the bar to be 100, but for us this may be much bigger or much smaller. This has been addressed and should scale and tick appropriately.
 * Update metadata did not respect whether or not a datastream was verisoned.  Because of this, any update on an unversioned datastream would switch the datastream back to being versionable.  This has been addressed.
 * Update metadata was counting a successful update twice.  This has been addressed.
+* Address thrown exception from empty result set.
 
 **New Operations**:
 
 * Download all versions of a datastream with download all versions.  See docs for more details.
+
+**New Fedora Public Methods**:
+
+* FedoraRequest.get_content_models(): This returns a sequence of tuples with the pid (as a string) and a human readable content model (as a string).
 
 0.1.2 - January 5, 2020
 =======================
