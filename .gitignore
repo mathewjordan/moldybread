@@ -3,3 +3,5 @@ bin/*
 config/config.yml
 sample_output/*
 experiment/*
+moldybread
+tests/test1
