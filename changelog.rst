@@ -2,7 +2,7 @@
 Moldy Bread Change Log
 ======================
 
-0.1.3 - Upcoming (Not Yet Tagged)
+0.1.3 - January 10, 2019
 =================================
 
 **Bug Fixes**:

@@ -1,1 +1,2 @@
 parse_data	moldybreadpkg/xmlhelper.html#parse_data,string,string	xmlhelper: parse_data(response, element: string): seq[string]	
+get_attribute_of_element	moldybreadpkg/xmlhelper.html#get_attribute_of_element,string,string,string	xmlhelper: get_attribute_of_element(response, element, attribute: string): seq[string]	
