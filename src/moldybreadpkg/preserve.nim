@@ -104,15 +104,16 @@ method get_parent_and_page_number(this: PreservationObject): (string, string) {.
     parse_data(this.external_relationships, "islandora:isPageNumber")[0]
   )
   
-method download(this: PreservationObject, datastream: string): bool {. base .} =
+method download(this: PreservationObject, datastream: string): string {. base .} =
   let request = this.client.request(fmt"{this.base_uri}/fedora/objects/{this.pid}/datastreams/{datastream}/content")
   if request.status == "200 OK":
     if this.content_model == "page":
       let rels = this.get_parent_and_page_number()
       serialize_file(fmt"{rels[0]}-page{rels[1]}{get_extension(request.headers)}", request.body, "/home/mark/nim_projects/moldybread/experiment")
+      fmt"{rels[0]}-page{rels[1]}{get_extension(request.headers)}"
     else:
       serialize_file(fmt"{this.pid}{get_extension(request.headers)}", request.body, "/home/mark/nim_projects/moldybread/experiment")
-    true
+      fmt"{this.pid}{get_extension(request.headers)}"
   else:
     raise newException(AccessError, fmt"Could not download {this.pid}'s {datastream} datastream.")
 
@@ -121,6 +122,6 @@ method preserve*(this: PreservationObject): seq[(string, string)] {. base .} =
   this.external_relationships = this.get_external_relationships()
   this.content_model = this.get_content_model()
   for datastream in this.get_preservation_datastreams(preservation_settings):
-    this.dsid_and_checksum.add((datastream, this.get_checksum(datastream)))
-    discard this.download(datastream)
+    let filename = this.download(datastream)
+    this.dsid_and_checksum.add((filename, this.get_checksum(datastream)))
   this.dsid_and_checksum
