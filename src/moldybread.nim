@@ -273,7 +273,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "preserve"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")

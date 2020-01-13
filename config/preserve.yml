@@ -1,0 +1,14 @@
+book:
+  dsids:
+    - MODS
+page:
+  dsids:
+    - OBJ
+large_image:
+  dsids:
+    - MODS
+    - OBJ
+basic_image:
+  dsids:
+    - MODS
+    - OBJ

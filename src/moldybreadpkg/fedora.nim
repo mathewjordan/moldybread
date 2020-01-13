@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, preserve, typetraits
 
 type
   FedoraRequest* = ref object
@@ -900,3 +900,28 @@ method get_content_models*(this: FedoraRequest): seq[(string, string)] {. base .
     if i in ticks:
       bar.increment()
   bar.finish()
+
+method preserve*(this: FedoraRequest): int {. base .} =
+  var
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+    dsids_and_checksums: seq[(string, seq[(string, string)])]
+  let
+    ticks = progress_prep(len(this.results))
+  echo "\n\nGetting Content Models of results set.\n"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_preservation_object = PreservationObject(pid: pid, client: this.client, base_uri: this.base_url)
+    dsids_and_checksums.add((pid, new_preservation_object.preserve()))
+    if i in ticks:
+      bar.increment()
+    result += 1
+  echo dsids_and_checksums
+  bar.finish()
+
+when isMainModule:
+  let fedora_connection = initFedoraRequest(output_directory="/home/mark/nim_projects/moldybread/experiment", pid_part="test")
+  fedora_connection.results = fedora_connection.populate_results()
+  echo fedora_connection.preserve()
