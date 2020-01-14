@@ -2,6 +2,13 @@
 Moldy Bread Change Log
 ======================
 
+0.1.4 - Upcoming / Not Tagged
+=============================
+
+** Bug Fixes**:
+
+* Address dc population bug where there was a 500 error if you had a dc string that included a space.
+
 0.1.3 - January 10, 2019
 =================================
 

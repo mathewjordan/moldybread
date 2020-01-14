@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.3"
+version       = "0.1.4"
 author        = "Mark Baggett"
 description   = "A Fedora 3.8 client in nim"
 license       = "GPL-3.0"

@@ -45,7 +45,7 @@ proc convert_dc_pairs_to_string(dc_pairs: string): string =
   var new_list: seq[string]
   for pair in dc_pairs.split(";"):
     let separated_values = pair.split(":")
-    new_list.add(fmt"{separated_values[0]}%7E{separated_values[1]}")
+    new_list.add(fmt"{separated_values[0]}%7E%27{separated_values[1]}%27")
   join(new_list, "%20")
 
 proc progress_prep(size: int): seq[int] =
@@ -294,8 +294,8 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   echo "\nPopulating results.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
-    request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-    base_request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
+    base_request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
   elif this.terms != "":
     request = fmt"{this.base_url}/fedora/objects?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
