@@ -5,9 +5,13 @@ Moldy Bread Change Log
 0.1.4 - Upcoming / Not Tagged
 =============================
 
-** Bug Fixes**:
+**Bug Fixes**:
 
 * Address dc population bug where there was a 500 error if you had a dc string that included a space.
+
+**New Fedora Public Methods**:
+
+* FedoraRequest.audit_responsibility(username): Returns a list of objects where a specific username has created or modified the object at some point.
 
 0.1.3 - January 10, 2019
 =================================

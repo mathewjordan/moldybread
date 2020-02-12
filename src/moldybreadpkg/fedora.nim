@@ -199,6 +199,17 @@ method get_content_model(this: FedoraRecord): string {. base .} =
   else:
     "not found"
 
+method audit_responsibility(this: FedoraRecord, username: string): bool {. base .} =
+  let response = this.client.request(this.uri, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    let responsible_parties = this.parse_string(response.body, "audit:responsibility")
+    if username in responsible_parties:
+      true
+    else:
+      false
+  else:
+    false
+
 method get(this: FedoraRecord): string {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
@@ -488,6 +499,38 @@ method download_foxml*(this: FedoraRequest): Message {. base .} =
       bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method audit_responsibility*(this: FedoraRequest, username: string): Message {. base .} =
+  ## Looks for objects created or modified by a specific user.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    echo fedora_connection.audit_responsibility("fedoraAdmin").successes
+  ##
+  var
+    attempts: int
+    pid: string
+    successes: seq[string]
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
+  echo fmt"{'\n'}{'\n'}Auditing responsibility for {username}.{'\n'}"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/export", pid: pid)
+      response = new_record.audit_responsibility(username)
+    if response == true:
+      successes.add(pid)
+    attempts += 1
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+  Message(successes: successes, attempts: attempts)
 
 method version_datastream*(this: FedoraRequest, dsid: string, versionable: bool): Message {. base .} =
   ## Makes a datastream versioned or not versioned.
