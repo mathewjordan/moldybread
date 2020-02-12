@@ -262,6 +262,17 @@ when isMainModule:
   ##
   ##    moldybread -o find_distinct_datastreams -n test -y /full/path/to/my/yaml/file.yml
   ##
+  ## Audit Responsibility
+  ## ====================
+  ##
+  ## Get a list of objects created or modified by a user.
+  ##
+  ## Example command:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o audit_responsibility -n test -x mark
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -273,7 +284,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -283,6 +294,7 @@ when isMainModule:
     option("-v", "--versionable", help="Sets if a datastream is versionable (true or false). Defaults to true.", default="true")
     option("-y", "--yaml_path", help="Specify path to config.yml", default="")
     option("-dt", "--datetime", help="Use to specify date when a date is required (yyyy-MM-dd).", default="")
+    option("-x", "--extras", help="An extra string field designed to be agnostic and to be used in various operations.", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
   var yaml_settings = read_yaml_config(fmt"{getCurrentDir()}/config/config.yml")
@@ -421,6 +433,13 @@ when isMainModule:
           fedora_connection.results = fedora_connection.populate_results()
           let result = fedora_connection.find_distinct_datastreams()
           echo fmt"{'\n'}{'\n'}There are {len(result)} unique datastreams across this result set: {'\n'}{result}"
+      of "audit_responsibility":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let result = fedora_connection.audit_responsibility(opts.extras)
+          echo fmt"{'\n'}{'\n'}There are {len(result.successes)} object(s) created or modified by {opts.extras}: {'\n'}{result.successes}{'\n'}"
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
@@ -436,6 +455,6 @@ when isMainModule:
     except RangeError:
       echo "No matching results in result set."
       break
-    except:
+    except YamlStreamError:
       echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use the full path for now until I figure out how relative pathing works."
       break
