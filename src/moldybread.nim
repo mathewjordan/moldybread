@@ -314,7 +314,7 @@ when isMainModule:
       case opts.operation
       of "harvest_datastream":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           if opts.dsid == "":
             opts.dsid = "MODS"
@@ -323,7 +323,7 @@ when isMainModule:
           echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "harvest_datastream_no_pages":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           if opts.dsid == "":
             opts.dsid = "MODS"
@@ -332,14 +332,14 @@ when isMainModule:
           echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "download_foxml":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let test = fedora_connection.download_foxml()
           echo fmt"{'\n'}Successfully downloaded {len(test.successes)} record(s).  {len(test.errors)} error(s) occurred."
       of "version_datastream":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           try:
@@ -349,7 +349,7 @@ when isMainModule:
             echo "Must set -v or --versionable to true or false."
       of "change_object_state":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           try:
@@ -359,7 +359,7 @@ when isMainModule:
             echo "Must set -v or --versionable to true or false."
       of "purge_old_versions":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           try:
             fedora_connection.results = fedora_connection.populate_results()
@@ -369,7 +369,7 @@ when isMainModule:
             echo "Must set -d or --dsid to select datastream."
       of "find_objs_missing_dsid":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           try:
             fedora_connection.results = fedora_connection.populate_results()
@@ -381,7 +381,7 @@ when isMainModule:
             echo "Must set -d or --dsid to select datastream."
       of "get_datastream_history":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           try:
             fedora_connection.results = fedora_connection.populate_results()
@@ -391,7 +391,7 @@ when isMainModule:
             echo "Must set -d or --dsid to select datastream."
       of "get_datastream_at_date":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         elif opts.datetime == "":
           echo "Must specify the data / time for the datastream you wish to download."
         else:
@@ -403,7 +403,7 @@ when isMainModule:
             echo "Must set -d or --dsid to select datastream."
       of "download_all_versions":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           try:
             fedora_connection.results = fedora_connection.populate_results()
@@ -413,7 +413,7 @@ when isMainModule:
             echo "Must set -d or --dsid to select datastream."
       of "validate_checksums":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
             fedora_connection.results = fedora_connection.populate_results()
             if opts.dsid != "":
@@ -428,14 +428,14 @@ when isMainModule:
                 echo test.errors
       of "find_distinct_datastreams":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let result = fedora_connection.find_distinct_datastreams()
           echo fmt"{'\n'}{'\n'}There are {len(result)} unique datastreams across this result set: {'\n'}{result}"
       of "audit_responsibility":
         if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
-          echo "Must specify how you want to populated results: -p for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
         else:
           fedora_connection.results = fedora_connection.populate_results()
           let result = fedora_connection.audit_responsibility(opts.extras)

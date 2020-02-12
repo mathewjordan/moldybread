@@ -298,7 +298,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     token: string = "temporary"
     request, base_request: string
     response = ""
-  echo "\nPopulating results.  This may take a while.\n"
+  echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
     request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
