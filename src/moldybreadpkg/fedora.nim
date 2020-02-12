@@ -201,14 +201,10 @@ method get_content_model(this: FedoraRecord): string {. base .} =
 
 method audit_responsibility(this: FedoraRecord, username: string): bool {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
+  result = false
   if response.status == "200 OK":
-    let responsible_parties = this.parse_string(response.body, "audit:responsibility")
-    if username in responsible_parties:
-      true
-    else:
-      false
-  else:
-    false
+    if username in this.parse_string(response.body, "audit:responsibility"):
+      result = true
 
 method get(this: FedoraRecord): string {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
