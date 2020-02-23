@@ -34,7 +34,7 @@ jobs:
     - name: Read VERSIONCHANGES
       id: changelog
       run: |
-        echo "::set-output name=body::$(cat VERSIONCHANGES.md)"
+        echo "::set-output name=body::$(cat VERSION_CHANGES.md)"
 
     - name: Create Release
       id: create_release
