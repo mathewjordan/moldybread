@@ -1,9 +1,6 @@
 Moldy Bread
 ===========
 
-.. image:: https://travis-ci.org/markpbaggett/moldybread.png
-   :alt: Travis Badge
-
 .. image:: https://github.com/markpbaggett/moldybread/workflows/Build%20and%20Test/badge.svg
   :alt: Github Build and Test Badge
   :width: 25%
