@@ -13,7 +13,7 @@ bin           = @["moldybread"]
 
 requires "nim >= 1.0.2"
 requires "xmltools >= 0.1.5"
-requires "https://github.com/status-im/NimYAML.git"
+requires "yaml >= 0.13.0"
 requires "argparse >= 0.10.0"
 requires "progress >=  1.1.1"
 
