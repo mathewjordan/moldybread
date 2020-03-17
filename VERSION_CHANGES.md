@@ -9,3 +9,4 @@
 **New Fedora Public Methods**:
 
 - FedoraRequest.audit_responsibility(username): Returns a list of objects where a specific username has created or modified the object at some point.
+- FedoraRequest.update_solr_with_gsearch(): Attempts to update solr documents and returns a Message with successes, errors, and attempts.

@@ -939,3 +939,34 @@ method get_content_models*(this: FedoraRequest): seq[(string, string)] {. base .
     if i in ticks:
       bar.increment()
   bar.finish()
+
+method update_solr_with_gsearch*(this: FedoraRequest, gsearch_auth: (string, string)): Message {. base .} =
+  ## Updates solr records for objects with gsearch.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    discard fedora_connection.update_solr_with_gsearch()
+  ##
+  var
+    successes, errors: seq[string]
+    attempts: int
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let
+    ticks = progress_prep(len(this.results))
+    gsearch_connection = initGsearchRequest(this.base_url, gsearch_auth)
+  echo fmt"{'\n'}{'\n'}Updating Solr Documents:{'\n'}"
+  bar.start()
+  for i in 1..len(this.results):
+    let x = gsearch_connection.update_solr_record(this.results[i-1])
+    if x:
+      successes.add(this.results[i-1])
+    else:
+      errors.add(this.results[i-1])
+    attempts += 1
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+  Message(errors: errors, successes: successes, attempts: attempts)
