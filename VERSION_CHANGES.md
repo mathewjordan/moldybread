@@ -5,6 +5,7 @@
 **New Operations**:
 
 - Get a list of objects created or modified by a user with audit_responsibility.  See docs for more details.
+- Update solr with gsearch with update_solr.  See docs for more details.
 
 **New Fedora Public Methods**:
 
