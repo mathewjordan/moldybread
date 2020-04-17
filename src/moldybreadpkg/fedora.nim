@@ -76,6 +76,41 @@ proc initGsearchRequest(url: string="http://localhost:8080", auth=("fedoraAdmin"
   client.headers["Authorization"] = "Basic " & base64.encode(auth[0] & ":" & auth[1])
   GsearchConnection(client: client, base_url: url)
 
+proc process_versions*(pids_and_versions: seq[(string, int)], version_target: int, operation: string): seq[string] =
+  ## Helper function to process pids and versions against user expectations.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    var versions = @[("abc:1", 1), ("abc:2", 2), ("abc:3", 1)]
+  ##    assert process_versions(versions, 2, "==") == @["abc:2"]
+  ##
+  for pair in pids_and_versions:
+    case operation
+    of "==":
+      if pair[1] == version_target:
+        result.add(pair[0])
+    of "!=":
+      if pair[1] != version_target:
+        result.add(pair[0])
+    of ">=":
+      if pair[1] >= version_target:
+        result.add(pair[0])
+    of "<=":
+      if pair[1] <= version_target:
+        result.add(pair[0])
+    of ">":
+      if pair[1] > version_target:
+        result.add(pair[0])
+    of "<":
+      if pair[1] < version_target:
+        result.add(pair[0])
+    else:
+      result.add("Invalid operation.")
+      return
+  return
+
 method grab_pids(this: FedoraRequest, response: string): seq[string] {. base .} =
   let
     xml_response = Node.fromStringE(response)
@@ -1002,6 +1037,7 @@ method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(st
   bar.finish()
 
 when isMainModule:
-  let fedora_connection = initFedoraRequest(pid_part="test")
+  let
+    fedora_connection = initFedoraRequest(pid_part="utk.ir.fg")
   fedora_connection.results = fedora_connection.populate_results()
-  echo fedora_connection.count_versions_of_datastream("MODS")
+  echo process_versions(fedora_connection.count_versions_of_datastream("POLICY"), 3, "<")
