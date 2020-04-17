@@ -948,6 +948,7 @@ method update_solr_with_gsearch*(this: FedoraRequest, gsearch_auth: (string, str
   ## .. code-block:: nim
   ##
   ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
   ##    discard fedora_connection.update_solr_with_gsearch()
   ##
   var
@@ -970,3 +971,37 @@ method update_solr_with_gsearch*(this: FedoraRequest, gsearch_auth: (string, str
       bar.increment()
   bar.finish()
   Message(errors: errors, successes: successes, attempts: attempts)
+
+method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(string, int)] {. base .}=
+  ## Returns pids with the total number of versions a specified datastream has
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let fedora_connection = initFedoraRequest(pid_part="test")
+  ##    fedora_connection.results = fedora_connection.populate_results()
+  ##    discard fedora_connection.count_versions_of_datastream("MODS")
+  ##
+  var
+    attempts: int
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let
+    ticks = progress_prep(len(this.results))
+  echo fmt"{'\n'}{'\n'}Count number of versions of a specific datastream for records in a set:{'\n'}"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      versions = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{dsid}/history?format=xml", pid: pid)
+    attempts += 1
+    result.add((pid, len(versions.get_history)))
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+
+when isMainModule:
+  let fedora_connection = initFedoraRequest(pid_part="test")
+  fedora_connection.results = fedora_connection.populate_results()
+  echo fedora_connection.count_versions_of_datastream("MODS")

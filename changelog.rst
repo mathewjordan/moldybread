@@ -16,6 +16,7 @@ Moldy Bread Change Log
 **New Fedora Public Methods**:
 
 * FedoraRequest.audit_responsibility(username): Returns a list of objects where a specific username has created or modified the object at some point.
+* FedoraRequest.count_versions_of_datastreams(dsid): Returns pids with the total number of versions a specified datastream has.
 
 0.1.3 - January 10, 2019
 =================================
