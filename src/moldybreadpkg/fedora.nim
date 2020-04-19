@@ -1024,7 +1024,7 @@ method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(st
     bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
   let
     ticks = progress_prep(len(this.results))
-  echo fmt"{'\n'}{'\n'}Count number of versions of a specific datastream for records in a set:{'\n'}"
+  echo fmt"{'\n'}{'\n'}Counting number of {dsid} versions in this set:{'\n'}"
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]
@@ -1035,9 +1035,3 @@ method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(st
     if i in ticks:
       bar.increment()
   bar.finish()
-
-when isMainModule:
-  let
-    fedora_connection = initFedoraRequest(pid_part="utk.ir.fg")
-  fedora_connection.results = fedora_connection.populate_results()
-  echo process_versions(fedora_connection.count_versions_of_datastream("POLICY"), 3, "<")
