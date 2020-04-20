@@ -12,6 +12,7 @@ Moldy Bread Change Log
 **New Operations**:
 
 * Get a list of objects created or modified by a user with audit_responsibility.  See docs for more details.
+* Find all objects matching your requested number of versions of a particular datastream.  See docs for more details.
 
 **New Fedora Public Methods and Other Procs**:
 

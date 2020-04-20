@@ -284,6 +284,25 @@ when isMainModule:
   ##
   ##    moldybread -o update_solr -n test
   ##
+  ## Find Objects based on number of versions
+  ## ========================================
+  ##
+  ## Find all objects based on the number of versions and an operator by using extras (`-x`).  Specify your version number then operator with a semicolon (`;`) as a separator.
+  ##
+  ## For instance, you can find all matching objects with exactly 3 POLICY versions:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o find_objects_by_versions -n test -d POLICY -x "3;=="
+  ##
+  ## Or you can find all matching objects that don't have 3 POLICY versions:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o find_objects_by_versions -n test -d POLICY -x "3;!="
+  ##
+  ## Allowed operators are: `==`, `!=`, `>=`, `<=`, `>`, and `<`.
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -295,7 +314,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -458,6 +477,15 @@ when isMainModule:
           fedora_connection.results = fedora_connection.populate_results()
           let result = fedora_connection.update_solr_with_gsearch(gsearch_auth=(yaml_settings.gsearch_username, yaml_settings.gsearch_password))
           echo fmt"{'\n'}{'\n'}Updated {len(result.successes)} Solr document(s).  {len(result.errors)} occurred."
+      of "find_objects_by_versions":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let
+            populators = opts.extras.split(";")
+            matching_objects = process_versions(fedora_connection.count_versions_of_datastream(opts.dsid), parseInt(populators[0]), populators[1])
+          echo fmt"{'\n'}Found {len(matching_objects)} matching your requested {opts.dsid} versions: {'\n'}{'\n'}{matching_objects}"
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
