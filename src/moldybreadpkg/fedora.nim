@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml
 
 type
   FedoraRequest* = ref object
@@ -1035,3 +1035,27 @@ method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(st
     if i in ticks:
       bar.increment()
   bar.finish()
+
+method find_xacml_restrictions(this: FedoraRequest): seq[(string, seq[XACMLRule])] {. base .} =
+  ## Returns all XACML rules for objects in a set.
+  ##
+  ## Example:
+  ##
+  var
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let
+    ticks = progress_prep(len(this.results))
+  echo fmt"Finding XACML restrictions for all objects in set:{'\n'}"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/POLICY/content", pid: pid)
+      response = new_record.get()
+    if response != "":
+      result.add((pid, parse_rules(response)))
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+    
