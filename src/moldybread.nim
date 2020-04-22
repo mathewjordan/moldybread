@@ -303,6 +303,17 @@ when isMainModule:
   ##
   ## Allowed operators are: `==`, `!=`, `>=`, `<=`, `>`, and `<`.
   ##
+  ## Find XACML Rules and Exceptions for objects
+  ## ===========================================
+  ##
+  ## Find all rules and any exceptions on that rule for a set of results
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o find_xacml_restrictions -n test
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -314,7 +325,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -486,6 +497,17 @@ when isMainModule:
             populators = opts.extras.split(";")
             matching_objects = process_versions(fedora_connection.count_versions_of_datastream(opts.dsid), parseInt(populators[0]), populators[1])
           echo fmt"{'\n'}Found {len(matching_objects)} matching your requested {opts.dsid} versions: {'\n'}{'\n'}{matching_objects}"
+      of "find_xacml_restrictions":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let
+            restrictions = fedora_connection.find_xacml_restrictions()
+          for restriction in restrictions:
+            echo fmt"Rules on {restriction[0]}:{'\n'}"
+            for rule in restriction[1]:
+              echo fmt"{'\t'}{rule.rule_id} except for {rule.excepted_roles_and_logins}{'\n'}"
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
