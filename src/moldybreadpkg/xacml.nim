@@ -49,8 +49,10 @@ proc newXACMLRule(rule: string): XACMLRule =
   )
 
 proc parse_rules*(response: string): seq[XACMLRule] =
-  ## Parses a XACML poliy as a string and returns XACMLRules with information about the policy.
-  ## 
+  ## Parses a XACML policy as a string and returns XACMLRules with information about the policy.
+  ##
+  ## To be clear, this isn't a true interpretation of XACML 1.0, but should work with our use cases.
+  ##
   let
     xml_response = Node.fromStringE(response)
     rules = $(xml_response // "Rule")
