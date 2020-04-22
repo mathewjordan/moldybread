@@ -1036,7 +1036,7 @@ method count_versions_of_datastream*(this: FedoraRequest, dsid: string): seq[(st
       bar.increment()
   bar.finish()
 
-method find_xacml_restrictions(this: FedoraRequest): seq[(string, seq[XACMLRule])] {. base .} =
+method find_xacml_restrictions*(this: FedoraRequest): seq[(string, seq[XACMLRule])] {. base .} =
   ## Returns all XACML rules for objects in a set.
   ##
   ## Example:
@@ -1058,4 +1058,3 @@ method find_xacml_restrictions(this: FedoraRequest): seq[(string, seq[XACMLRule]
     if i in ticks:
       bar.increment()
   bar.finish()
-    
