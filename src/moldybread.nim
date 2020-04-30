@@ -31,6 +31,13 @@ proc is_it_restricted_for_management(fedora_object: (string, seq[XACMLRule])): b
       if len(rule.excepted_roles_and_logins) > 0:
         return true
 
+proc find_xacml_exceptions(fedora_object: (string, seq[XACMLRule]), rule_id: string): seq[string]=
+  ## Finds exceptions to a specific XACML rule id
+  ##
+  for rule in fedora_object[1]:
+    if rule.rule_id == rule_id:
+      result = rule.excepted_roles_and_logins
+
 when isMainModule:
   ## 
   ## ===========
@@ -333,6 +340,17 @@ when isMainModule:
   ##
   ##    moldybread -o check_management_restrictions -n test
   ##
+  ## Get Exceptions to a Specific XACML Rule or Action
+  ## =================================================
+  ##
+  ## Gets the exceptions to a specific rule or action for all objects in a set
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o get_xacml_exceptions -n test -x "deny-management-functions"
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -344,7 +362,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions", "check_management_restrictions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions", "check_management_restrictions", "get_xacml_exceptions"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -540,6 +558,18 @@ when isMainModule:
             if is_it_restricted_for_management(restriction) == false:
               unrestricted.add(restriction[0])
           echo fmt"These objects are not restricted: {unrestricted}"
+      of "get_xacml_exceptions":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let
+            restrictions = fedora_connection.find_xacml_restrictions()
+          echo fmt"Finding exceptions for {opts.extras}:{'\n'}"
+          for restriction in restrictions:
+            let exceptions = find_xacml_exceptions(restriction, opts.extras)
+            if len(exceptions[1]) > 0:
+              echo fmt"{'\t'}{restriction[0]} has these exceptions: {exceptions}{'\n'}"
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
