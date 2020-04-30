@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os, moldybreadpkg/xacml
 
 type
   ConfigSettings = object
@@ -22,6 +22,14 @@ proc read_yaml_config(file_path: string): ConfigSettings =
   var file_stream = newFileStream(file_path)
   load(file_stream, result)
   file_stream.close()
+
+proc is_it_restricted_for_management(fedora_object: (string, seq[XACMLRule])): bool =
+  ## Reviews all rules in a XACML policy to see if it is has management restrictions
+  ##
+  for rule in fedora_object[1]:
+    if rule.rule_id == "deny-management-functions":
+      if len(rule.excepted_roles_and_logins) > 0:
+        return true
 
 when isMainModule:
   ## 
@@ -314,6 +322,17 @@ when isMainModule:
   ##
   ##    moldybread -o find_xacml_restrictions -n test
   ##
+  ## Check for Objects with no restrictions on management
+  ## =====================================================
+  ##
+  ## Finds any objects that have no exceptions on `deny-management-functions`
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o check_management_restrictions -n test
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -325,7 +344,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions", "check_management_restrictions"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -508,6 +527,19 @@ when isMainModule:
             echo fmt"Rules on {restriction[0]}:{'\n'}"
             for rule in restriction[1]:
               echo fmt"{'\t'}{rule.rule_id} except for {rule.excepted_roles_and_logins}{'\n'}"
+      of "check_management_restrictions":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          let
+            restrictions = fedora_connection.find_xacml_restrictions()
+          var
+            unrestricted: seq[string]
+          for restriction in restrictions:
+            if is_it_restricted_for_management(restriction) == false:
+              unrestricted.add(restriction[0])
+          echo fmt"These objects are not restricted: {unrestricted}"
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
