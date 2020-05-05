@@ -2,7 +2,7 @@
 Moldy Bread Change Log
 ======================
 
-0.1.4 - Upcoming / Not Tagged
+0.1.4 - May 4, 2020
 =============================
 
 **Bug Fixes**:
@@ -22,7 +22,7 @@ Moldy Bread Change Log
 * FedoraRequest.count_versions_of_datastreams(dsid): Returns pids with the total number of versions a specified datastream has.
 * process_versions(): Requires a sequence of tuples with pids and number of versions are returns matches based on the specified operation and version value.
 
-0.1.3 - January 10, 2019
+0.1.3 - January 10, 2020
 =================================
 
 **Bug Fixes**:
