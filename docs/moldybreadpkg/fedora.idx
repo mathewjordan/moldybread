@@ -1,11 +1,13 @@
 FedoraRequest	moldybreadpkg/fedora.html#FedoraRequest	fedora: FedoraRequest	
 Message	moldybreadpkg/fedora.html#Message	fedora: Message	
 initFedoraRequest	moldybreadpkg/fedora.html#initFedoraRequest,string,tuple of (string, string),string,string,string,string,int	fedora: initFedoraRequest(url: string = &quot;http://localhost:8080&quot;;\n                  auth = (&quot;fedoraAdmin&quot;, &quot;fedoraAdmin&quot;);\n                  output_directory, dc_values, terms, pid_part = &quot;&quot;; max_results = 100): FedoraRequest	
+process_versions	moldybreadpkg/fedora.html#process_versions,seq[T][],int,string	fedora: process_versions(pids_and_versions: seq[(string, int)]; version_target: int;\n                 operation: string): seq[string]	
 populate_results	moldybreadpkg/fedora.html#populate_results.e,FedoraRequest	fedora: populate_results(this: FedoraRequest): seq[string]	
 harvest_datastream	moldybreadpkg/fedora.html#harvest_datastream.e,FedoraRequest,string	fedora: harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
 harvest_datastream_no_pages	moldybreadpkg/fedora.html#harvest_datastream_no_pages.e,FedoraRequest,string	fedora: harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
 update_metadata	moldybreadpkg/fedora.html#update_metadata.e,FedoraRequest,string,string,	fedora: update_metadata(this: FedoraRequest; datastream_id, directory: string;\n                gsearch_auth: (string, string); clean_up = false): Message	
 download_foxml	moldybreadpkg/fedora.html#download_foxml.e,FedoraRequest	fedora: download_foxml(this: FedoraRequest): Message	
+audit_responsibility	moldybreadpkg/fedora.html#audit_responsibility.e,FedoraRequest,string	fedora: audit_responsibility(this: FedoraRequest; username: string): Message	
 version_datastream	moldybreadpkg/fedora.html#version_datastream.e,FedoraRequest,string,bool	fedora: version_datastream(this: FedoraRequest; dsid: string; versionable: bool): Message	
 change_object_state	moldybreadpkg/fedora.html#change_object_state.e,FedoraRequest,string	fedora: change_object_state(this: FedoraRequest; state: string): Message	
 purge_old_versions_of_datastream	moldybreadpkg/fedora.html#purge_old_versions_of_datastream.e,FedoraRequest,string	fedora: purge_old_versions_of_datastream(this: FedoraRequest; dsid: string): Message	
@@ -18,3 +20,6 @@ validate_checksums	moldybreadpkg/fedora.html#validate_checksums.e,FedoraRequest,
 validate_checksums	moldybreadpkg/fedora.html#validate_checksums.e,FedoraRequest	fedora: validate_checksums(this: FedoraRequest): Message	
 find_distinct_datastreams	moldybreadpkg/fedora.html#find_distinct_datastreams.e,FedoraRequest	fedora: find_distinct_datastreams(this: FedoraRequest): seq[string]	
 get_content_models	moldybreadpkg/fedora.html#get_content_models.e,FedoraRequest	fedora: get_content_models(this: FedoraRequest): seq[(string, string)]	
+update_solr_with_gsearch	moldybreadpkg/fedora.html#update_solr_with_gsearch.e,FedoraRequest,	fedora: update_solr_with_gsearch(this: FedoraRequest; gsearch_auth: (string, string)): Message	
+count_versions_of_datastream	moldybreadpkg/fedora.html#count_versions_of_datastream.e,FedoraRequest,string	fedora: count_versions_of_datastream(this: FedoraRequest; dsid: string): seq[(string, int)]	
+find_xacml_restrictions	moldybreadpkg/fedora.html#find_xacml_restrictions.e,FedoraRequest	fedora: find_xacml_restrictions(this: FedoraRequest): seq[(string, seq[XACMLRule])]	

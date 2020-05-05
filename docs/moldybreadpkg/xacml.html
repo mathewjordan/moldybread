@@ -17,7 +17,7 @@
 <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
 
 <!-- CSS -->
-<title>xmlhelper</title>
+<title>xacml</title>
 <style type="text/css" >
 /*
 Stylesheet for use with Docutils/rst2html.
@@ -805,7 +805,7 @@ function main() {
 <body onload="main()">
 <div class="document" id="documentId">
   <div class="container">
-    <h1 class="title">xmlhelper</h1>
+    <h1 class="title">xacml</h1>
     <div class="row">
   <div class="three columns">
   <div id="global-links">
@@ -825,12 +825,23 @@ function main() {
   </div>
   <ul class="simple simple-toc" id="toc-list">
 <li>
+  <a class="reference reference-toplevel" href="#7" id="57">Types</a>
+  <ul class="simple simple-toc-section">
+      <li><a class="reference" href="#XACMLRule"
+    title="XACMLRule = ref object of RootObj
+  rule_id*: string
+  effect*: string
+  target_actions*: seq[string]
+  excepted_roles_and_logins*: seq[string]
+  body*: string"><wbr />XACMLRule<span class="attachedType"></span></a></li>
+
+  </ul>
+</li>
+<li>
   <a class="reference reference-toplevel" href="#12" id="62">Procs</a>
   <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#parse_data%2Cstring%2Cstring"
-    title="parse_data(response, element: string): seq[string]"><wbr />parse_<wbr />data<span class="attachedType"></span></a></li>
-  <li><a class="reference" href="#get_attribute_of_element%2Cstring%2Cstring%2Cstring"
-    title="get_attribute_of_element(response, element, attribute: string): seq[string]"><wbr />get_<wbr />attribute_<wbr />of_<wbr />element<span class="attachedType"></span></a></li>
+      <li><a class="reference" href="#parse_rules%2Cstring"
+    title="parse_rules(response: string): seq[XACMLRule]"><wbr />parse_<wbr />rules<span class="attachedType">XACMLRule</span></a></li>
 
   </ul>
 </li>
@@ -842,70 +853,44 @@ function main() {
   <div id="tocRoot"></div>
   
   <p class="module-desc"></p>
-  <div class="section" id="12">
-<h1><a class="toc-backref" href="#12">Procs</a></h1>
+  <div class="section" id="7">
+<h1><a class="toc-backref" href="#7">Types</a></h1>
 <dl class="item">
-<a id="parse_data,string,string"></a>
-<dt><pre><span class="Keyword">proc</span> <a href="#parse_data%2Cstring%2Cstring"><span class="Identifier">parse_data</span></a><span class="Other">(</span><span class="Identifier">response</span><span class="Other">,</span> <span class="Identifier">element</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span>
-    <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">XmlError</span><span class="Other">,</span> <span class="Identifier">RegexError</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<a id="XACMLRule"></a>
+<dt><pre><a href="xacml.html#XACMLRule"><span class="Identifier">XACMLRule</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">RootObj</span>
+  <span class="Identifier">rule_id</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">effect</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">target_actions</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Identifier">excepted_roles_and_logins</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Identifier">body</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+</pre></dt>
 <dd>
 
-<p>Takes XML as a string and an element name and returns the text nodes of each element as a sequence of strings.</p>
-<p>Example:</p>
-<pre class="listing"><span class="Keyword">let</span>
-      <span class="Identifier">some_xml</span> <span class="Operator">=</span> <span class="LongStringLit">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;datastreamProfile  xmlns=&quot;http://www.fedora.info/definitions/1/0/management/&quot;  xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.fedora.info/definitions/1/0/management/ http://www.fedora.info/definitions/1/0/datastreamProfile.xsd&quot; pid=&quot;test:9&quot; dsID=&quot;MODS&quot;&gt;&lt;dsLabel&gt;MODS Record&lt;/dsLabel&gt;
-      &lt;dsVersionID&gt;MODS.5&lt;/dsVersionID&gt;
-      &lt;dsCreateDate&gt;2019-12-19T02:50:24.322Z&lt;/dsCreateDate&gt;
-      &lt;dsState&gt;A&lt;/dsState&gt;
-      &lt;dsMIME&gt;application/xml&lt;/dsMIME&gt;
-      &lt;dsFormatURI&gt;&lt;/dsFormatURI&gt;
-      &lt;dsControlGroup&gt;X&lt;/dsControlGroup&gt;
-      &lt;dsSize&gt;178&lt;/dsSize&gt;
-      &lt;dsVersionable&gt;true&lt;/dsVersionable&gt;
-      &lt;dsInfoType&gt;&lt;/dsInfoType&gt;
-      &lt;dsLocation&gt;test:9+MODS+MODS.5&lt;/dsLocation&gt;
-      &lt;dsLocationType&gt;&lt;/dsLocationType&gt;
-      &lt;dsChecksumType&gt;SHA-1&lt;/dsChecksumType&gt;
-      &lt;dsChecksum&gt;f2e60f8860158d6d175bdd3c2710928c79a5d024&lt;/dsChecksum&gt;
-      &lt;dsChecksumValid&gt;true&lt;/dsChecksumValid&gt;
-      &lt;/datastreamProfile&gt;
-      &quot;&quot;&quot;</span>
-  <span class="Identifier">an_element</span> <span class="Operator">=</span> <span class="StringLit">&quot;dsChecksumValid&quot;</span>
-<span class="Identifier">assert</span> <span class="Identifier">parsedata</span><span class="Punctuation">(</span><span class="Identifier">some_xml</span><span class="Punctuation">,</span> <span class="Identifier">an_element</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;true&quot;</span><span class="Punctuation">]</span></pre>
+
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/xmlhelper.nim#L3"
+href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/xacml.nim#L4"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/xmlhelper.nim#L3" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/xacml.nim#L4" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
-<a id="get_attribute_of_element,string,string,string"></a>
-<dt><pre><span class="Keyword">proc</span> <a href="#get_attribute_of_element%2Cstring%2Cstring%2Cstring"><span class="Identifier">get_attribute_of_element</span></a><span class="Other">(</span><span class="Identifier">response</span><span class="Other">,</span> <span class="Identifier">element</span><span class="Other">,</span> <span class="Identifier">attribute</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">XmlError</span><span class="Other">,</span> <span class="Identifier">RegexError</span><span class="Other">]</span><span class="Other">,</span>
+
+</dl></div>
+<div class="section" id="12">
+<h1><a class="toc-backref" href="#12">Procs</a></h1>
+<dl class="item">
+<a id="parse_rules,string"></a>
+<dt><pre><span class="Keyword">proc</span> <a href="#parse_rules%2Cstring"><span class="Identifier">parse_rules</span></a><span class="Other">(</span><span class="Identifier">response</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="xacml.html#XACMLRule"><span class="Identifier">XACMLRule</span></a><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span>
+    <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">XmlError</span><span class="Other">,</span> <span class="Identifier">RegexError</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
 
-<p>Terrible code to try to find matching attribute values for nodes in a string of XML.</p>
-<p>Example:</p>
-<pre class="listing"><span class="Keyword">let</span>
-  <span class="Identifier">some_xml</span> <span class="Operator">=</span> <span class="LongStringLit">&quot;&quot;&quot;&lt;rdf:RDF xmlns:fedora=&quot;info:fedora/fedora-system:def/relations-external#&quot; xmlns:fedora-model=&quot;info:fedora/fedora-system:def/model#&quot; xmlns:islandora=&quot;http://islandora.ca/ontology/relsext#&quot; xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
-    &lt;rdf:Description rdf:about=&quot;info:fedora/test:6&quot;&gt;
-    &lt;islandora:isPageOf rdf:resource=&quot;info:fedora/test:3&quot;&gt;&lt;/islandora:isPageOf&gt;
-    &lt;islandora:isSequenceNumber&gt;2&lt;/islandora:isSequenceNumber&gt;
-    &lt;islandora:isPageNumber&gt;2&lt;/islandora:isPageNumber&gt;
-    &lt;islandora:isSection&gt;1&lt;/islandora:isSection&gt;
-    &lt;fedora:isMemberOf rdf:resource=&quot;info:fedora/test:3&quot;&gt;&lt;/fedora:isMemberOf&gt;
-    &lt;fedora-model:hasModel rdf:resource=&quot;info:fedora/islandora:pageCModel&quot;&gt;&lt;/fedora-model:hasModel&gt;
-    &lt;islandora:generate_ocr&gt;TRUE&lt;/islandora:generate_ocr&gt;
-    &lt;/rdf:Description&gt;
-    &lt;/rdf:RDF&gt;&quot;&quot;&quot;</span>
-  <span class="Identifier">an_element</span> <span class="Operator">=</span> <span class="StringLit">&quot;fedora-model:hasModel&quot;</span>
-  <span class="Identifier">an_attribute</span> <span class="Operator">=</span> <span class="StringLit">&quot;rdf:resource&quot;</span>
-<span class="Identifier">assert</span> <span class="Identifier">get_attribute_of_element</span><span class="Punctuation">(</span><span class="Identifier">some_xml</span><span class="Punctuation">,</span> <span class="Identifier">an_element</span><span class="Punctuation">,</span> <span class="Identifier">an_attribute</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;info:fedora/islandora:pageCModel&quot;</span><span class="Punctuation">]</span></pre>
+<p>Parses a XACML policy as a string and returns XACMLRules with information about the policy.</p>
+<p>To be clear, this isn't a true interpretation of XACML 1.0, but should work with our use cases. </p>
+
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/xmlhelper.nim#L39"
+href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/xacml.nim#L51"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/xmlhelper.nim#L39" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/xacml.nim#L51" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 

@@ -16,3 +16,9 @@ Download Datastream at Date	moldybread.html#download-datastream-at-date	 Downloa
 Download All Versions of a Datastream	moldybread.html#download-all-versions-of-a-datastream	 Download All Versions of a Datastream	
 Validate Checksums	moldybread.html#validate-checksums	 Validate Checksums	
 Find Unique Datastreams	moldybread.html#find-unique-datastreams	 Find Unique Datastreams	
+Audit Responsibility	moldybread.html#audit-responsibility	 Audit Responsibility	
+Update Solr	moldybread.html#update-solr	 Update Solr	
+Find Objects based on number of versions	moldybread.html#find-objects-based-on-number-of-versions	 Find Objects based on number of versions	
+Find XACML Rules and Exceptions for objects	moldybread.html#find-xacml-rules-and-exceptions-for-objects	 Find XACML Rules and Exceptions for objects	
+Check for Objects with no restrictions on management	moldybread.html#check-for-objects-with-no-restrictions-on-management	 Check for Objects with no restrictions on management	
+Get Exceptions to a Specific XACML Rule or Action	moldybread.html#get-exceptions-to-a-specific-xacml-rule-or-action	 Get Exceptions to a Specific XACML Rule or Action	

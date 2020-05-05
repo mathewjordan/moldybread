@@ -1,0 +1,2 @@
+XACMLRule	moldybreadpkg/xacml.html#XACMLRule	xacml: XACMLRule	
+parse_rules	moldybreadpkg/xacml.html#parse_rules,string	xacml: parse_rules(response: string): seq[XACMLRule]	
