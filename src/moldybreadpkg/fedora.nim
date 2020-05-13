@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml, rdfhelper
 
 type
   FedoraRequest* = ref object
@@ -410,6 +410,29 @@ method determine_pages(this: FedoraRequest): seq[string] {. base .} =
       response = new_record.check_if_page()
     if response:
       result.add(pid)
+    if i in ticks:
+      bar.increment()
+  bar.finish()
+
+method find_book_and_page(this: FedoraRequest): seq[(string, string, string)] {. base .} =
+  let predicate = "&predicate=info%3afedora%2ffedora-system%3adef%2frelations-external%23isMemberOf"
+  var
+    pid: string
+    bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
+  let ticks = progress_prep(len(this.results))
+  echo "\n\nGetting Matching Books with Page and PID:\n"
+  bar.start()
+  for i in 1..len(this.results):
+    pid = this.results[i-1]
+    let
+      new_record = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle{predicate}", pid: pid)
+      response = new_record.get()
+    if response != "":
+      let
+        book = newTriple(response).obj.replace("<info:fedora/", "").replace(">", "")
+        page_triple = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle&predicate=http://islandora.ca/ontology/relsext%23isPageNumber", pid: pid).get()
+        page = newTriple(page_triple).obj.replace(""""""", "")
+      result.add((book, page, pid))
     if i in ticks:
       bar.increment()
   bar.finish()
@@ -1058,3 +1081,8 @@ method find_xacml_restrictions*(this: FedoraRequest): seq[(string, seq[XACMLRule
     if i in ticks:
       bar.increment()
   bar.finish()
+
+when isMainModule:
+  let fedora_connection = initFedoraRequest(pid_part="test")
+  fedora_connection.results = fedora_connection.populate_results()
+  echo fedora_connection.find_book_and_page()
