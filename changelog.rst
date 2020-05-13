@@ -2,8 +2,10 @@
 Moldy Bread Change Log
 ======================
 
-Not Yet Tagged for Release  / Upcoming
+0.1.5 - May 13, 2020
 ======================================
+
+Tiny release specifically to allow for books to be exported and semantically organized.
 
 **New Operations**:
 
