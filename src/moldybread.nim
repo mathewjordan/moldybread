@@ -351,6 +351,17 @@ when isMainModule:
   ##
   ##    moldybread -o get_xacml_exceptions -n test -x "deny-management-functions"
   ##
+  ## Download Pages from Books and Keep Semantic Filenaming
+  ## ======================================================
+  ##
+  ## Download pages for all matching objects and name them as book_pageNumber.extension
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: sh
+  ##
+  ##    moldybread -o download_book_pages -n test -d OBJ
+  ##
   const banner =     """
   __  __       _     _         ____                      _ 
  |  \/  | ___ | | __| |_   _  | __ ) _ __ ___  __ _  __| |
@@ -362,7 +373,7 @@ when isMainModule:
  """
   var p = newParser(fmt"Moldy Bread:  See https://markpbaggett.github.io/moldybread/moldybread.html for documentation and examples on how to use this package.{'\n'}{'\n'}"):
     help(banner)
-    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions", "check_management_restrictions", "get_xacml_exceptions"])
+    option("-o", "--operation", help="Specify operation", choices = @["harvest_datastream", "harvest_datastream_no_pages", "update_metadata", "update_metadata_and_delete_old_versions", "download_foxml", "version_datastream", "change_object_state", "purge_old_versions", "find_objs_missing_dsid", "get_datastream_history", "get_datastream_at_date", "validate_checksums", "find_distinct_datastreams", "download_all_versions", "audit_responsibility", "update_solr", "find_objects_by_versions", "find_xacml_restrictions", "check_management_restrictions", "get_xacml_exceptions", "download_book_pages"])
     option("-d", "--dsid", help="Specify datastream id.", default="")
     option("-n", "--namespaceorpid", help="Populate results based on namespace or PID.", default="")
     option("-dc", "--dcsearch", help="Populate results based on dc field and strings.  See docs for formatting info.", default="")
@@ -380,7 +391,8 @@ when isMainModule:
     try:
       if opts.yaml_path != "":
         yaml_settings = read_yaml_config(opts.yaml_path)
-      let fedora_connection = initFedoraRequest(
+      let
+        fedora_connection = initFedoraRequest(
         url=yaml_settings.base_url, 
         auth=(yaml_settings.username, yaml_settings.password), 
         output_directory=yaml_settings.directory_path, 
@@ -570,6 +582,12 @@ when isMainModule:
             let exceptions = find_xacml_exceptions(restriction, opts.extras)
             if len(exceptions[1]) > 0:
               echo fmt"{'\t'}{restriction[0]} has these exceptions: {exceptions}{'\n'}"
+      of "download_book_pages":
+        if opts.namespaceorpid == "" and opts.dcsearch == "" and opts.terms == "":
+          echo "Must specify how you want to populated results: -n for Pid or Namespace, -dc for dc fields and strings, or -t for keyword terms."
+        else:
+          fedora_connection.results = fedora_connection.populate_results()
+          discard fedora_connection.download_page_with_book_relationship(opts.dsid)
       of "update_metadata":
         if opts.path != "":
           yaml_settings.directory_path = opts.path
