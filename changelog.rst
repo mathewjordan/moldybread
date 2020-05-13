@@ -2,6 +2,14 @@
 Moldy Bread Change Log
 ======================
 
+Not Yet Tagged for Release  / Upcoming
+======================================
+
+**New Fedora Public Methods and Other Procs**:
+
+* FedoraRequest.download_page_with_book_relatioship():  Downloads all matching datastreams related to a page with naming based on the book and page number.
+
+
 0.1.4 - May 4, 2020
 =============================
 
