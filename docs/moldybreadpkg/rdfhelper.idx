@@ -1,0 +1,2 @@
+TurtleTriple	moldybreadpkg/rdfhelper.html#TurtleTriple	rdfhelper: TurtleTriple	
+newTriple	moldybreadpkg/rdfhelper.html#newTriple,string	rdfhelper: newTriple(rdf: string): TurtleTriple	

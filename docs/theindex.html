@@ -806,7 +806,7 @@ function main() {
 <div class="document" id="documentId">
   <div class="container">
     <h1 class="title">Index</h1>
-    Documents: <a href="moldybread.html">MOLDY BREAD</a>.<br/><p />Modules: <a href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>, <a href="moldybreadpkg/xacml.html">moldybreadpkg/xacml</a>, <a href="moldybreadpkg/xmlhelper.html">moldybreadpkg/xmlhelper</a>.<br/><p /><h2>API symbols</h2>
+    Documents: <a href="moldybread.html">MOLDY BREAD</a>.<br/><p />Modules: <a href="moldybreadpkg/fedora.html">moldybreadpkg/fedora</a>, <a href="moldybreadpkg/rdfhelper.html">moldybreadpkg/rdfhelper</a>, <a href="moldybreadpkg/xacml.html">moldybreadpkg/xacml</a>, <a href="moldybreadpkg/xmlhelper.html">moldybreadpkg/xmlhelper</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="audit_responsibility" href="#audit_responsibility"><span>audit_responsibility:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: audit_responsibility(this: FedoraRequest; username: string): Message" href="moldybreadpkg/fedora.html#audit_responsibility.e%2CFedoraRequest%2Cstring">fedora: audit_responsibility(this: FedoraRequest; username: string): Message</a></li>
@@ -826,6 +826,12 @@ function main() {
 <dt><a name="download_foxml" href="#download_foxml"><span>download_foxml:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: download_foxml(this: FedoraRequest): Message" href="moldybreadpkg/fedora.html#download_foxml.e%2CFedoraRequest">fedora: download_foxml(this: FedoraRequest): Message</a></li>
+          </ul></dd>
+<dt><a name="download_page_with_book_relationship" href="#download_page_with_book_relationship"><span>download_page_with_book_relationship:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="fedora: download_page_with_book_relationship(this: FedoraRequest; datastream_id: string): seq[
+    (string, string, string)]" href="moldybreadpkg/fedora.html#download_page_with_book_relationship.e%2CFedoraRequest%2Cstring">fedora: download_page_with_book_relationship(this: FedoraRequest; datastream_id: string): seq[
+    (string, string, string)]</a></li>
           </ul></dd>
 <dt><a name="FedoraRequest" href="#FedoraRequest"><span>FedoraRequest:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -885,6 +891,10 @@ function main() {
 <li><a class="reference external"
           data-doc-search-tag="fedora: Message" href="moldybreadpkg/fedora.html#Message">fedora: Message</a></li>
           </ul></dd>
+<dt><a name="newTriple" href="#newTriple"><span>newTriple:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="rdfhelper: newTriple(rdf: string): TurtleTriple" href="moldybreadpkg/rdfhelper.html#newTriple%2Cstring">rdfhelper: newTriple(rdf: string): TurtleTriple</a></li>
+          </ul></dd>
 <dt><a name="parse_data" href="#parse_data"><span>parse_data:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="xmlhelper: parse_data(response, element: string): seq[string]" href="moldybreadpkg/xmlhelper.html#parse_data%2Cstring%2Cstring">xmlhelper: parse_data(response, element: string): seq[string]</a></li>
@@ -906,6 +916,10 @@ function main() {
 <dt><a name="purge_old_versions_of_datastream" href="#purge_old_versions_of_datastream"><span>purge_old_versions_of_datastream:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="fedora: purge_old_versions_of_datastream(this: FedoraRequest; dsid: string): Message" href="moldybreadpkg/fedora.html#purge_old_versions_of_datastream.e%2CFedoraRequest%2Cstring">fedora: purge_old_versions_of_datastream(this: FedoraRequest; dsid: string): Message</a></li>
+          </ul></dd>
+<dt><a name="TurtleTriple" href="#TurtleTriple"><span>TurtleTriple:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="rdfhelper: TurtleTriple" href="moldybreadpkg/rdfhelper.html#TurtleTriple">rdfhelper: TurtleTriple</a></li>
           </ul></dd>
 <dt><a name="update_metadata" href="#update_metadata"><span>update_metadata:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -936,7 +950,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2020-05-05 01:02:52 UTC</small>
+        <small>Made with Nim. Generated: 2020-05-13 17:19:11 UTC</small>
       </div>
     </div>
   </div>

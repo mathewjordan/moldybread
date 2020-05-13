@@ -4,6 +4,7 @@ initFedoraRequest	moldybreadpkg/fedora.html#initFedoraRequest,string,tuple of (s
 process_versions	moldybreadpkg/fedora.html#process_versions,seq[T][],int,string	fedora: process_versions(pids_and_versions: seq[(string, int)]; version_target: int;\n                 operation: string): seq[string]	
 populate_results	moldybreadpkg/fedora.html#populate_results.e,FedoraRequest	fedora: populate_results(this: FedoraRequest): seq[string]	
 harvest_datastream	moldybreadpkg/fedora.html#harvest_datastream.e,FedoraRequest,string	fedora: harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
+download_page_with_book_relationship	moldybreadpkg/fedora.html#download_page_with_book_relationship.e,FedoraRequest,string	fedora: download_page_with_book_relationship(this: FedoraRequest; datastream_id: string): seq[\n    (string, string, string)]	
 harvest_datastream_no_pages	moldybreadpkg/fedora.html#harvest_datastream_no_pages.e,FedoraRequest,string	fedora: harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message	
 update_metadata	moldybreadpkg/fedora.html#update_metadata.e,FedoraRequest,string,string,	fedora: update_metadata(this: FedoraRequest; datastream_id, directory: string;\n                gsearch_auth: (string, string); clean_up = false): Message	
 download_foxml	moldybreadpkg/fedora.html#download_foxml.e,FedoraRequest	fedora: download_foxml(this: FedoraRequest): Message	

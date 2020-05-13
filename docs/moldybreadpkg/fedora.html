@@ -839,7 +839,7 @@ function main() {
   results*: seq[string]
   client: HttpClient
   max_results*: int
-  output_directory: string
+  output_directory*: string
   dc_values: string
   pid_part: string
   terms: string"><wbr />Fedora<wbr />Request<span class="attachedType"></span></a></li>
@@ -871,6 +871,9 @@ function main() {
     title="populate_results(this: FedoraRequest): seq[string]"><wbr />populate_<wbr />results<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#harvest_datastream.e%2CFedoraRequest%2Cstring"
     title="harvest_datastream(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />datastream<span class="attachedType">FedoraRequest</span></a></li>
+  <li><a class="reference" href="#download_page_with_book_relationship.e%2CFedoraRequest%2Cstring"
+    title="download_page_with_book_relationship(this: FedoraRequest; datastream_id: string): seq[
+    (string, string, string)]"><wbr />download_<wbr />page_<wbr />with_<wbr />book_<wbr />relationship<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#harvest_datastream_no_pages.e%2CFedoraRequest%2Cstring"
     title="harvest_datastream_no_pages(this: FedoraRequest; datastream_id = &quot;MODS&quot;): Message"><wbr />harvest_<wbr />datastream_<wbr />no_<wbr />pages<span class="attachedType">FedoraRequest</span></a></li>
   <li><a class="reference" href="#update_metadata.e%2CFedoraRequest%2Cstring%2Cstring%2C"
@@ -925,7 +928,7 @@ function main() {
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
-<a class="reference external" href="xmlhelper.html">xmlhelper</a>, <a class="reference external" href="xacml.html">xacml</a>
+<a class="reference external" href="xmlhelper.html">xmlhelper</a>, <a class="reference external" href="xacml.html">xacml</a>, <a class="reference external" href="rdfhelper.html">rdfhelper</a>
 </dl></div>
 <div class="section" id="7">
 <h1><a class="toc-backref" href="#7">Types</a></h1>
@@ -936,7 +939,7 @@ function main() {
   <span class="Identifier">results</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
   <span class="Identifier">client</span><span class="Other">:</span> <span class="Identifier">HttpClient</span>
   <span class="Identifier">max_results</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">output_directory</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">output_directory</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">dc_values</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">pid_part</span><span class="Other">:</span> <span class="Identifier">string</span>
   <span class="Identifier">terms</span><span class="Other">:</span> <span class="Identifier">string</span>
@@ -945,7 +948,7 @@ function main() {
 
 Type to Handle Fedora requests
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L4"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L4"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L4" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -960,7 +963,7 @@ class="link-seesrc" target="_blank">Source</a>
 
 Type to handle messaging
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L15"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L15"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L15" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -982,7 +985,7 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span></pre><p>Example with dc_values string:</p>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">dc_values</span><span class="Operator">=</span><span class="StringLit">&quot;title:Pencil;contributor:Wiley&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L55"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L55"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L55" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -997,7 +1000,7 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">var</span> <span class="Identifier">versions</span> <span class="Operator">=</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="Punctuation">(</span><span class="StringLit">&quot;abc:1&quot;</span><span class="Punctuation">,</span> <span class="DecNumber">1</span><span class="Punctuation">)</span><span class="Punctuation">,</span> <span class="Punctuation">(</span><span class="StringLit">&quot;abc:2&quot;</span><span class="Punctuation">,</span> <span class="DecNumber">2</span><span class="Punctuation">)</span><span class="Punctuation">,</span> <span class="Punctuation">(</span><span class="StringLit">&quot;abc:3&quot;</span><span class="Punctuation">,</span> <span class="DecNumber">1</span><span class="Punctuation">)</span><span class="Punctuation">]</span>
 <span class="Identifier">assert</span> <span class="Identifier">process_versions</span><span class="Punctuation">(</span><span class="Identifier">versions</span><span class="Punctuation">,</span> <span class="DecNumber">2</span><span class="Punctuation">,</span> <span class="StringLit">&quot;==&quot;</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;abc:2&quot;</span><span class="Punctuation">]</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L79"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L79"
 class="link-seesrc" target="_blank">Source</a>
 <a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L79" class="link-seesrc" target="_blank" >Edit</a>
 
@@ -1019,9 +1022,9 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L321"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L332"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L321" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L332" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="harvest_datastream.e,FedoraRequest,string"></a>
@@ -1037,9 +1040,28 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L364"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L375"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L364" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L375" class="link-seesrc" target="_blank" >Edit</a>
+
+</dd>
+<a id="download_page_with_book_relationship.e,FedoraRequest,string"></a>
+<dt><pre><span class="Keyword">method</span> <a href="#download_page_with_book_relationship.e%2CFedoraRequest%2Cstring"><span class="Identifier">download_page_with_book_relationship</span></a><span class="Other">(</span><span class="Identifier">this</span><span class="Other">:</span> <a href="fedora.html#FedoraRequest"><span class="Identifier">FedoraRequest</span></a><span class="Other">;</span>
+    <span class="Identifier">datastream_id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">base</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">,</span>
+    <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">HttpRequestError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">OSError</span><span class="Other">,</span> <span class="Identifier">TimeoutError</span><span class="Other">,</span> <span class="Identifier">ProtocolError</span><span class="Other">,</span>
+    <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">Defect</span><span class="Other">,</span> <span class="Identifier">InvalidPositionError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span>
+    <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">WriteDirEffect</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
+<dd>
+
+<p>Downloads parts of pages of a book and names it based on the relationship.</p>
+<p>Example:</p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">,</span> <span class="Identifier">output_directory</span><span class="Operator">=</span><span class="StringLit">&quot;output&quot;</span><span class="Punctuation">)</span>
+<span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
+<span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">download_page_with_book_relationship</span><span class="Punctuation">(</span><span class="StringLit">&quot;OBJ&quot;</span><span class="Punctuation">)</span></pre>
+&nbsp;&nbsp;<a
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L428"
+class="link-seesrc" target="_blank">Source</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L428" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="harvest_datastream_no_pages.e,FedoraRequest,string"></a>
@@ -1057,9 +1079,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">harvest_datastream_no_pages</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L417"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L462"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L417" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L462" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="update_metadata.e,FedoraRequest,string,string,"></a>
@@ -1077,9 +1099,9 @@ class="link-seesrc" target="_blank">Source</a>
 <pre class="listing"><span class="Keyword">let</span> <span class="Identifier">fedora_connection</span> <span class="Operator">=</span> <span class="Identifier">initFedoraRequest</span><span class="Punctuation">(</span><span class="Identifier">pid_part</span><span class="Operator">=</span><span class="StringLit">&quot;test&quot;</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">update_metadata</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;/home/mark/nim_projects/moldybread/experiment&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L453"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L499"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L453" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L499" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="download_foxml.e,FedoraRequest"></a>
@@ -1096,9 +1118,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">download_foxml</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L498"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L544"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L498" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L544" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="audit_responsibility.e,FedoraRequest,string"></a>
@@ -1115,9 +1137,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">audit_responsibility</span><span class="Punctuation">(</span><span class="StringLit">&quot;fedoraAdmin&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L534"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L580"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L534" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L580" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="version_datastream.e,FedoraRequest,string,bool"></a>
@@ -1133,9 +1155,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">version_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">,</span> <span class="Identifier">false</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L566"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L612"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L566" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L612" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="change_object_state.e,FedoraRequest,string"></a>
@@ -1151,9 +1173,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">change_object_state</span><span class="Punctuation">(</span><span class="StringLit">&quot;I&quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L600"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L646"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L600" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L646" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="purge_old_versions_of_datastream.e,FedoraRequest,string"></a>
@@ -1170,9 +1192,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span><span class="Punctuation">(</span><span class="Identifier">typeOf</span><span class="Punctuation">(</span><span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">purge_old_versions_of_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="Identifier">Message</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L641"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L687"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L641" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L687" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="find_objects_missing_datastream.e,FedoraRequest,string"></a>
@@ -1188,9 +1210,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">find_objects_missing_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;RELS-INT&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">errors</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L675"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L721"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L675" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L721" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="get_datastreams.e,FedoraRequest"></a>
@@ -1208,9 +1230,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_datastreams</span><span class="Punctuation">(</span><span class="Identifier">profiles</span><span class="Operator">=</span><span class="Identifier">true</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L707"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L753"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L707" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L753" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="get_datastream_history.e,FedoraRequest,string"></a>
@@ -1226,9 +1248,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_datastream_history</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L740"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L786"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L740" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L786" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="get_datastream_at_date.e,FedoraRequest,string,string"></a>
@@ -1245,9 +1267,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_datastream_at_date</span><span class="Punctuation">(</span><span class="StringLit">&quot;DC&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;2019-12-25&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L774"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L820"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L774" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L820" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="download_all_versions_of_datastream.e,FedoraRequest,string"></a>
@@ -1265,9 +1287,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">download_all_versions_of_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L808"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L854"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L808" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L854" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="validate_checksums.e,FedoraRequest,string"></a>
@@ -1285,9 +1307,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">validate_checksums</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">successes</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L846"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L892"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L846" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L892" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="validate_checksums.e,FedoraRequest"></a>
@@ -1305,9 +1327,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">validate_checksums</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">errors</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L882"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L928"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L882" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L928" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="find_distinct_datastreams.e,FedoraRequest"></a>
@@ -1324,9 +1346,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">find_distinct_datastreams</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L924"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L970"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L924" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L970" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="get_content_models.e,FedoraRequest"></a>
@@ -1343,9 +1365,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Identifier">echo</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">get_content_models</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L950"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L996"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L950" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L996" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="update_solr_with_gsearch.e,FedoraRequest,"></a>
@@ -1361,9 +1383,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">update_solr_with_gsearch</span><span class="Punctuation">(</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L978"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L1024"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L978" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L1024" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="count_versions_of_datastream.e,FedoraRequest,string"></a>
@@ -1381,9 +1403,9 @@ class="link-seesrc" target="_blank">Source</a>
 <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">results</span> <span class="Operator">=</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">populate_results</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
 <span class="Keyword">discard</span> <span class="Identifier">fedora_connection</span><span class="Operator">.</span><span class="Identifier">count_versions_of_datastream</span><span class="Punctuation">(</span><span class="StringLit">&quot;MODS&quot;</span><span class="Punctuation">)</span></pre>
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L1010"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L1056"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L1010" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L1056" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 <a id="find_xacml_restrictions.e,FedoraRequest"></a>
@@ -1398,9 +1420,9 @@ class="link-seesrc" target="_blank">Source</a>
 <p>Example: </p>
 
 &nbsp;&nbsp;<a
-href="https://github.com/markpbaggett/moldybread/tree/5002da12b463b95cbddefaaa0eccfdd4fbfd65be/src/moldybreadpkg/fedora.nim#L1039"
+href="https://github.com/markpbaggett/moldybread/tree/cb6994b2ad57add870e97f3bf13776cd5ea760f8/src/moldybreadpkg/fedora.nim#L1085"
 class="link-seesrc" target="_blank">Source</a>
-<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L1039" class="link-seesrc" target="_blank" >Edit</a>
+<a href="https://github.com/markpbaggett/moldybread/edit/devel/src/moldybreadpkg/fedora.nim#L1085" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 
@@ -1413,7 +1435,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2020-05-05 01:02:52 UTC</small>
+        <small>Made with Nim. Generated: 2020-05-13 17:19:11 UTC</small>
       </div>
     </div>
   </div>
