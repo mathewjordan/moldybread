@@ -1,4 +1,4 @@
-import unittest, xmltools, moldybread, moldybreadpkg/fedora, typetraits, moldybreadpkg/xmlhelper
+import unittest, xmltools, moldybread, moldybreadpkg/fedora, typetraits, moldybreadpkg/xmlhelper, moldybreadpkg/rdfhelper
 
 suite "Test Public Types Initialization":
   echo "Test Public Types Initialization"
@@ -79,3 +79,16 @@ suite "Get Attribute of Elements Test":
 
   test "get_attribute_of_element works as expected":
     assert get_attribute_of_element(some_xml, an_element, an_attribute) == @["info:fedora/islandora:pageCModel"]
+
+suite "Test RDF Helper":
+  echo "Test RDF Helper"
+
+  setup:
+    let
+      turtle = "<info:fedora/test:22> <info:fedora/fedora-system:def/relations-external#isMemberOf> <info:fedora/test:21> ."
+
+  test "newTriple contructor works for subjects as expected":
+    assert newTriple(turtle).subject == "<info:fedora/test:22>"
+  
+  test "newTriple constructor works for predicates as expected":
+    assert newTriple(turtle).predicate == "<info:fedora/fedora-system:def/relations-external#isMemberOf>"
