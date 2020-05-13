@@ -7,7 +7,7 @@ type
     results*: seq[string]
     client: HttpClient
     max_results*: int
-    output_directory: string
+    output_directory*: string
     dc_values: string
     pid_part: string
     terms: string
@@ -231,7 +231,9 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
     let extension = this.get_extension(response.headers)
-    discard this.write_output(fmt"{book_pid}_{page_number}{extension}", response.body, output_directory)
+    if not existsDir(fmt"{output_directory}/{book_pid}"):
+      createDir(fmt"{output_directory}/{book_pid}")
+    discard this.write_output(fmt"{page_number}{extension}", response.body, fmt"{output_directory}/{book_pid}")
     true
   else:
     false
@@ -439,7 +441,7 @@ method download_page_with_book_relationship*(this: FedoraRequest, datastream_id:
     pid: string
     bar = newProgressBar(total=len(this.results), step=int(ceil(len(this.results)/100)))
   let ticks = progress_prep(len(this.results))
-  echo "\n\nDownloading Pages and Naming as Book_PageNumber.extension:\n"
+  echo "\n\nDownloading Pages and Naming as book/pageNumber.extension:\n"
   bar.start()
   for i in 1..len(this.results):
     pid = this.results[i-1]

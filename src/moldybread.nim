@@ -354,7 +354,7 @@ when isMainModule:
   ## Download Pages from Books and Keep Semantic Filenaming
   ## ======================================================
   ##
-  ## Download pages for all matching objects and name them as book_pageNumber.extension
+  ## Download pages for all matching objects and name them as book/pageNumber.extension
   ##
   ## Example:
   ##
