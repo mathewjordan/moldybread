@@ -2,7 +2,11 @@ Moldy Bread
 ===========
 
 .. image:: https://github.com/markpbaggett/moldybread/workflows/Build%20and%20Test/badge.svg
-  :alt: Github Build and Test Badge
+  :alt: GitHub Build and Test Badge
+  :width: 25%
+
+.. image:: https://github.com/markpbaggett/moldybread/workflows/Release%20and%20Publish/badge.svg
+  :alt: GitHub Release and Publish Badge
   :width: 25%
 
 An attempt to reimplement `whitebread <https://github.com/markpbaggett/whitebread/>`_ in `nim <https://nim-lang.org/>`_.
