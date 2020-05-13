@@ -232,7 +232,9 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
   if response.status == "200 OK":
     let 
       extension = this.get_extension(response.headers)
-      output_path = fmt"{output_directory}/{book_pid.split(""":""")[0]}/{book_pid.split(""":""")[1]}"
+      namespace = book_pid.split(""":""")[0]
+      book = book_pid.split(""":""")[1]
+      output_path = fmt"{output_directory}/{namespace}/{book}"
     if not existsDir(output_path):
       createDir(output_path)
     discard this.write_output(fmt"{page_number}{extension}", response.body, output_path)
