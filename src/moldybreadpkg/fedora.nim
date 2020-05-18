@@ -466,9 +466,9 @@ method download_page_with_book_relationship*(this: FedoraRequest, datastream_id:
     if response != "":
       let
         book = newTriple(response).obj.replace("<info:fedora/", "").replace(">", "")
-        page_triple = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle&predicate=http://islandora.ca/ontology/relsext%23isPageNumber", pid: pid).get()
+        page_triple = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle&predicate=http://islandora.ca/ontology/relsext%23isPageNumber", pid: pid, retries: 3, wait_time: 3000).get()
         page = newTriple(page_triple).obj.replace(""""""", "")
-      discard FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid).download_page_with_relationship(this.output_directory, book, page)
+      discard FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid, retries: 3, wait_time: 3000).download_page_with_relationship(this.output_directory, book, page)
       result.add((book, page, pid))
     if i in ticks:
       bar.increment()
