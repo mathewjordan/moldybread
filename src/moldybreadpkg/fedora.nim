@@ -365,6 +365,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
       stdout.write("->")
       response = this.client.getContent(request)
       new_pids = this.grab_pids(response)
+      stdout.write(response)
       for pid in new_pids:
         result.add(pid)
       token = this.get_token(response)
