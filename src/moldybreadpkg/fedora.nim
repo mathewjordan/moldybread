@@ -361,9 +361,14 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   while token.len > 0:
     try:
-      response = this.client.getContent(request)
+      # debug
+      responseNew = this.client(request)
       stdout.write(response)
+      stdout.write(response.status)
+      # enddebug
+      response = this.client.getContent(request)
       new_pids = this.grab_pids(response)
+      stdout.write("...")
       for pid in new_pids:
         result.add(pid)
         # debug
