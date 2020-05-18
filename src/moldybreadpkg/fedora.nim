@@ -362,7 +362,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   stdout.write("[")
   while token.len > 0:
     try:
-      stdout.write("->")
+      stdout.write("->...")
       response = this.client.getContent(request)
       new_pids = this.grab_pids(response)
       for pid in new_pids:
