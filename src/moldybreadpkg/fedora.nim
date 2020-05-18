@@ -348,6 +348,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     token: string = "temporary"
     request, base_request: string
     response = ""
+    responseNew = ""
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
@@ -363,8 +364,8 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     try:
       # debug
       responseNew = this.client(request)
-      stdout.write(response)
-      stdout.write(response.status)
+      stdout.write(responseNew)
+      stdout.write(responseNew.status)
       # enddebug
       response = this.client.getContent(request)
       new_pids = this.grab_pids(response)
