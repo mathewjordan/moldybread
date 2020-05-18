@@ -348,7 +348,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     token: string = "temporary"
     request, base_request: string
     response = ""
-    preflight: seq[string]
+    preflight: seq[string] = @[]
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
@@ -364,7 +364,6 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     try:
       # debug
       preflight = this.client.request(request, httpMethod = HttpGet)
-      stdout.write(preflight)
       stdout.write(preflight.status)
       # enddebug
       response = this.client.getContent(request)
