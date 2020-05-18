@@ -347,7 +347,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     new_pids: seq[string] = @[]
     token: string = "temporary"
     request, base_request: string
-    preflight = seq[string]
+    preflight = @[string]
     response = ""
     
   echo "\nFinding matching objects.  This may take a while.\n"
