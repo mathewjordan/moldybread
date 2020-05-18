@@ -347,7 +347,6 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     new_pids: seq[string] = @[]
     token: string = "temporary"
     request, base_request: string
-    preflight = @[string]
     response = ""
     
   echo "\nFinding matching objects.  This may take a while.\n"
@@ -364,7 +363,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   while token.len > 0:
     try:
       # debug
-      preflight = this.client.get(request)
+      let preflight = this.client.get(request)
       stdout.write(preflight.status)
       # enddebug
       response = this.client.getContent(request)
