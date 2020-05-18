@@ -367,7 +367,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
       stdout.write("->")
       response = this.client.request(request, httpMethod = HttpGet)
       if response.status == "200 OK":
-        notice(fmt"Successfully retrieved.")
+        notice(fmt"Successfully retrieved populate_results {request}.")
         new_pids = this.grab_pids(response.body)
         for pid in new_pids:
           result.add(pid)
@@ -375,7 +375,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
         request = fmt"{base_request}&sessionToken={token}"
         stdout.flushFile()
       else:
-        error(fmt"{response.status}: Method populate_results failed.")
+        error(fmt"{response.status}: Method populate_results failed on {request}.")
     except OSError:
       echo "Can't connect to host"
       break
