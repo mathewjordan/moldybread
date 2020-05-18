@@ -344,11 +344,10 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   ##    echo fedora_connection.populate_results()
   ##
   var
-    new_pids: seq[string] = @[]
+    preflight, new_pids: seq[string] = @[]
     token: string = "temporary"
     request, base_request: string
     response = ""
-    preflight = @[]
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
