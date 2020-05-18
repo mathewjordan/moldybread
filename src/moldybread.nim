@@ -402,7 +402,7 @@ when isMainModule:
         dc_values=opts.dcsearch,
         terms=opts.terms,
         max_results=yaml_settings.max_results)
-        logger = newFileLogger(yaml_settings.logfile, levelThreshold=lvlAll)
+        logger = newFileLogger(yaml_settings.logfile, fmtStr="[$time] - $levelname: ", levelThreshold=lvlAll)
       addHandler(logger)
       echo banner
       case opts.operation
