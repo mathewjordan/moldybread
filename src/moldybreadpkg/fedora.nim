@@ -349,7 +349,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     new_pids: seq[string] = @[]
     token: string = "temporary"
     request, base_request: string
-    response = ""
+    response : Response
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
@@ -365,11 +365,12 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   while token.len > 0:
     try:
       stdout.write("->")
-      response = this.client.getContent(request)
-      new_pids = this.grab_pids(response)
+      response = this.client.request(request, httpMethod = HttpGet)
+      stdout.write(response.status)
+      new_pids = this.grab_pids(response.body)
       for pid in new_pids:
         result.add(pid)
-      token = this.get_token(response)
+      token = this.get_token(response.body)
       request = fmt"{base_request}&sessionToken={token}"
       stdout.flushFile()
     except OSError:
