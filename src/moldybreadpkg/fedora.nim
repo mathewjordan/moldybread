@@ -368,7 +368,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
       for pid in new_pids:
         result.add(pid)
         # debug
-        tdout.write(pid)
+        stdout.write(pid)
       token = this.get_token(response)
       request = fmt"{base_request}&sessionToken={token}"
       stdout.flushFile()
