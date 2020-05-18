@@ -359,23 +359,22 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   else:
     request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
     base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-  stdout.write("[")
   while token.len > 0:
     try:
-      stdout.write("->...")
       response = this.client.getContent(request)
+      stdout.write(response)
       new_pids = this.grab_pids(response)
       for pid in new_pids:
         result.add(pid)
         # debug
         stdout.write(pid)
+        stdout.write("\n")
       token = this.get_token(response)
       request = fmt"{base_request}&sessionToken={token}"
       stdout.flushFile()
     except OSError:
       echo "Can't connect to host"
       break
-  stdout.write("]")
   stdout.flushFile()
 
 method harvest_datastream*(this: FedoraRequest, datastream_id="MODS"): Message {. base .} =
