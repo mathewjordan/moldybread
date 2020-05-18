@@ -230,10 +230,14 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
 method download_page_with_relationship(this: FedoraRecord, output_directory, book_pid, page_number: string): bool {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
-    let extension = this.get_extension(response.headers)
-    if not existsDir(fmt"{output_directory}/{book_pid}"):
-      createDir(fmt"{output_directory}/{book_pid}")
-    discard this.write_output(fmt"{page_number}{extension}", response.body, fmt"{output_directory}/{book_pid}")
+    let 
+      extension = this.get_extension(response.headers)
+      namespace = book_pid.split(""":""")[0]
+      book = book_pid.split(""":""")[1]
+      output_path = fmt"{output_directory}/{namespace}/{book}"
+    if not existsDir(output_path):
+      createDir(output_path)
+    discard this.write_output(fmt"{page_number}{extension}", response.body, output_path)
     true
   else:
     false
