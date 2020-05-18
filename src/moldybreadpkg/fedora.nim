@@ -364,6 +364,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     try:
       # debug
       let preflight = this.client.get(request)
+      stdout.write(preflight)
       stdout.write(preflight.status)
       # enddebug
       response = this.client.getContent(request)
