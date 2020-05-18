@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os, moldybreadpkg/xacml
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os, moldybreadpkg/xacml, logging
 
 type
   ConfigSettings = object
@@ -10,6 +10,7 @@ type
     directory_path: string
     gsearch_username: string
     gsearch_password: string
+    logfile: string
 
 proc read_yaml_config(file_path: string): ConfigSettings =
   ## Procedure to read in a yml file and populate a ConfigSettings variable based on it.
@@ -400,6 +401,8 @@ when isMainModule:
         dc_values=opts.dcsearch,
         terms=opts.terms,
         max_results=yaml_settings.max_results)
+        logger = newFileLogger(yaml_settings.logfile, levelThreshold=lvlAll)
+      addHandler(logger)
       echo banner
       case opts.operation
       of "harvest_datastream":
