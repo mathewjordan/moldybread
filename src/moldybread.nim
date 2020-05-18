@@ -1,4 +1,4 @@
-import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os, moldybreadpkg/xacml
+import streams, strutils, xmltools, yaml/serialization, moldybreadpkg/fedora, argparse, strformat, os, moldybreadpkg/xacml, logging
 
 type
   ConfigSettings = object
@@ -10,6 +10,7 @@ type
     directory_path: string
     gsearch_username: string
     gsearch_password: string
+    logfile: string
 
 proc read_yaml_config(file_path: string): ConfigSettings =
   ## Procedure to read in a yml file and populate a ConfigSettings variable based on it.
@@ -386,9 +387,10 @@ when isMainModule:
     option("-x", "--extras", help="An extra string field designed to be agnostic and to be used in various operations.", default="")
   var argv = commandLineParams()
   var opts = p.parse(argv)
-  var yaml_settings = read_yaml_config(fmt"{getCurrentDir()}/config/config.yml")
-  block main_control:
-    try:
+  try:
+    var
+      yaml_settings = read_yaml_config(fmt"{getCurrentDir()}/config/config.yml")
+    block main_control:
       if opts.yaml_path != "":
         yaml_settings = read_yaml_config(opts.yaml_path)
       let
@@ -400,6 +402,8 @@ when isMainModule:
         dc_values=opts.dcsearch,
         terms=opts.terms,
         max_results=yaml_settings.max_results)
+        logger = newFileLogger(yaml_settings.logfile, fmtStr="[$time] - $levelname: ", levelThreshold=lvlAll)
+      addHandler(logger)
       echo banner
       case opts.operation
       of "harvest_datastream":
@@ -600,9 +604,9 @@ when isMainModule:
         echo fmt"{'\n'}Successfully updated {len(operation.successes)} {opts.dsid} record(s).  Attempted but failed to update {len(operation.errors)} record(s)."
       else:
         echo "No matching operation."
-    except RangeError:
-      echo "No matching results in result set."
-      break
-    except YamlStreamError:
-      echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use the full path for now until I figure out how relative pathing works."
-      break
+  except RangeError:
+    echo "No matching results in result set."
+  except YamlConstructionError:
+    echo "Must set value of logfile in config.yml.  See default_config.yml."
+  except YamlStreamError:
+    echo fmt"Can't open yaml file at {opts.yaml_path}.  Please use the full path for now until I figure out how relative pathing works."

@@ -2,6 +2,13 @@
 Moldy Bread Change Log
 ======================
 
+0.1.6 - Not Yet Tagged for release
+==================================
+
+**New Features**:
+
+* A file logger has been added based on Nim's default logging library.  For now, it logs all levels and is partially configurable within config.yml.
+
 0.1.5 - May 13, 2020
 ======================================
 

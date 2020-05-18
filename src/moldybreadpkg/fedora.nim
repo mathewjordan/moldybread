@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml, rdfhelper
+import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml, rdfhelper, logging
 
 type
   FedoraRequest* = ref object
@@ -259,8 +259,10 @@ method audit_responsibility(this: FedoraRecord, username: string): bool {. base 
 method get(this: FedoraRecord): string {. base .} =
   let response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
+    notice(fmt"Successfully retrieved {this.uri} and contents for {this.pid}.")
     response.body
   else:
+    error(fmt"{response.status}: FedoraRequest.get() failed on {this.pid}.")
     ""
 
 method get_history(this: FedoraRecord): seq[string] {. base .} =
