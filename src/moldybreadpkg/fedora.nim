@@ -349,7 +349,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
     new_pids: seq[string] = @[]
     token: string = "temporary"
     request, base_request: string
-    response : Response
+    response: Response
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
@@ -373,9 +373,9 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
           result.add(pid)
         token = this.get_token(response.body)
         request = fmt"{base_request}&sessionToken={token}"
-        stdout.flushFile()
       else:
-        error(fmt"{response.status}: Method populate_results failed on {request}.")
+        fatal(fmt"{response.status}: Method populate_results failed on {request}.")
+      stdout.flushFile()
     except OSError:
       echo "Can't connect to host"
       break
