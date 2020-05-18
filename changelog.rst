@@ -9,9 +9,9 @@ Moldy Bread Change Log
 
 * A file logger has been added based on Nim's default logging library.  For now, it logs all levels and is partially configurable within config.yml.
 
-**Changes to FedoraRequest**:
+**Changes to FedoraRecord**:
 
-* FedoraRequest now has 2 additional attributes: wait_time and retries.  These are there so you can declare a value for the number of times a method on FedoraRequest should be retried before in results in a `fatal` failure.  wait_time allows you to set the amount of milliseconds to wait before retrying.
+* FedoraRecord now has 2 additional attributes: wait_time and retries.  These are there so you can declare a value for the number of times a method on FedoraRequest should be retried before in results in a `fatal` failure.  wait_time allows you to set the amount of milliseconds to wait before retrying.
 
 0.1.5 - May 13, 2020
 ======================================
