@@ -244,7 +244,7 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     true
   elif this.retries > 0:
     this.retries -= 1
-    error(fmt"Failed to download page {page_number} of {book_pid} from {this.pid}.")
+    error(fmt"{response.status} - Failed to download page {page_number} of {book_pid} from {this.pid}.")
     sleep(this.wait_time)
     this.download_page_with_relationship(output_directory, book_pid, page_number)
   else:
