@@ -5,3 +5,4 @@ max_results: 2
 directory_path: /full/path/to/my/output/directory
 gsearch_username: fedoraAdmin
 gsearch_password: fedoraAdmin
+logfile: moldybread.log
