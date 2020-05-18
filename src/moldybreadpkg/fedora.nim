@@ -363,7 +363,7 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   while token.len > 0:
     try:
       # debug
-      preflight = this.client.request(request, httpMethod = HttpGet)
+      preflight = this.client.get(request)
       stdout.write(preflight.status)
       # enddebug
       response = this.client.getContent(request)
