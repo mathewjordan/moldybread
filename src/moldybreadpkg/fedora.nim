@@ -362,14 +362,14 @@ method populate_results*(this: FedoraRequest): seq[string] {. base .} =
   echo "\nFinding matching objects.  This may take a while.\n"
   if this.dc_values != "":
     let dc_stuff = convert_dc_pairs_to_string(this.dc_values)
-    request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
-    base_request = fmt"{this.base_url}/fedora/objects?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
+    request = fmt"{this.base_url}/fedora/object?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
+    base_request = fmt"{this.base_url}/fedora/object?query={dc_stuff}&pid=true&resultFormat=xml&maxResults={this.max_results}".replace(" ", "%20")
   elif this.terms != "":
-    request = fmt"{this.base_url}/fedora/objects?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-    base_request = fmt"{this.base_url}/fedora/objects?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    request = fmt"{this.base_url}/fedora/object?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    base_request = fmt"{this.base_url}/fedora/object?terms={this.terms}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   else:
-    request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
-    base_request = fmt"{this.base_url}/fedora/objects?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    request = fmt"{this.base_url}/fedora/object?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
+    base_request = fmt"{this.base_url}/fedora/object?query=pid%7E{this.pid_part}*&pid=true&resultFormat=xml&maxResults={this.max_results}"
   stdout.write("[")
   while token.len > 0:
     try:
