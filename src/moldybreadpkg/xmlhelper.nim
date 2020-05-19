@@ -64,3 +64,66 @@ proc get_attribute_of_element*(response, element, attribute: string): seq[string
   for node in split(results, '<'):
     if attribute in node:
       result.add(node.split(attribute)[1].split("\"")[1])
+
+proc get_text_of_element_with_attribute*(response, element: string, attribute_with_value: (string, string)): seq[string] =
+  ## Grabs text values of elements with associated attributes.  Use with caution.
+  ##
+  ## Example:
+  ##
+  ## .. code-block:: nim
+  ##
+  ##    let
+  ##      some_xml = """<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+  ##        <identifier type="local">lady-vols-basketball_2010</identifier>
+  ##        <titleInfo supplied="yes"><title>Tennessee Lady Volunteers basketball media guide, 2010-2011</title></titleInfo>
+  ##        <titleInfo type="alternative" displayLabel="Cover Title"><title>2010-11 Lady Vol basketball: victory lane</title></titleInfo>
+  ##        <originInfo><dateIssued>2010</dateIssued><dateIssued encoding="edtf" keyDate="yes">2010</dateIssued>
+  ##        <publisher>University of Tennessee, Knoxville. Department of Athletics</publisher>
+  ##        <place>
+  ##        <placeTerm valueURI="http://id.loc.gov/authorities/names/n79109786">Knoxville (Tenn.)</placeTerm>
+  ##        </place>
+  ##        </originInfo>
+  ##        <abstract>Lady Volunteers basketball program from 2010.</abstract>
+  ##        <physicalDescription>
+  ##        <form authority="aat" valueURI="http://vocab.getty.edu/aat/300311670">booklets</form>
+  ##        <extent>212 pages</extent>
+  ##        </physicalDescription>
+  ##        <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh85012111">
+  ##        <topic>Basketball</topic>
+  ##        </subject>
+  ##        <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh2004010434">
+  ##        <topic>College sports for women</topic>
+  ##        </subject>
+  ##        <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh85028338">
+  ##        <topic>College sports</topic>
+  ##        </subject>
+  ##        <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh85012123">
+  ##        <topic>Basketball players</topic>
+  ##        </subject>
+  ##        <subject authority="lcsh" valueURI="http://id.loc.gov/authorities/subjects/sh85147485">
+  ##        <topic>Women basketball players</topic>
+  ##        </subject>
+  ##        <subject authority="naf" valueURI="http://id.loc.gov/authorities/names/n80003889">
+  ##        <name>
+  ##        <namePart>University of Tennessee, Knoxville</namePart>
+  ##        </name></subject>
+  ##        <subject authority="naf" valueURI="http://id.loc.gov/authorities/names/n88072771"><name><namePart>Summitt, Pat Head, 1952-2016</namePart></name></subject>
+  ##        <subject authority="naf" valueURI="http://id.loc.gov/authorities/names/n88072776"><name><namePart>Lady Volunteers (Basketball team)</namePart></name></subject>
+  ##        <subject authority="naf" valueURI="http://id.loc.gov/authorities/names/n79109786"><geographic>Knoxville (Tenn.)</geographic><cartographics><coordinates>35.96064, -83.92074</coordinates></cartographics></subject>
+  ##        <typeOfResource>text</typeOfResource>
+  ##        <classification authority="lcc">LD5296.A7</classification>
+  ##        <relatedItem displayLabel="Project" type="host"><titleInfo><title>University of Tennessee Lady Volunteers Basketball Media Guides</title></titleInfo></relatedItem>
+  ##        <location><physicalLocation valueURI="http://id.loc.gov/authorities/names/no2014027633">University of Tennessee, Knoxville. Special Collections</physicalLocation></location>
+  ##        <recordInfo><recordContentSource valueURI="http://id.loc.gov/authorities/names/n87808088">University of Tennessee, Knoxville. Libraries</recordContentSource></recordInfo>
+  ##        <accessCondition type="use and reproduction" xlink:href="http://rightsstatements.org/vocab/InC/1.0/">In Copyright</accessCondition>
+  ##        </mods>"""
+  ##     element = "identifier"
+  ##     attribute_with_value = ("type", "local")
+  ##     assert get_text_of_element_with_attribute(some_xml, element, attribute_with_value) == @["lady-vols-basketball_2010"]
+  ##
+  let
+    xml_response = Node.fromStringE(response)
+    results = $(xml_response // element)
+  for node in split(results, '<'):
+    if fmt"""{attribute_with_value[0]}="{attribute_with_value[1]}"""" in node:
+      result.add(node.split('>')[1])
