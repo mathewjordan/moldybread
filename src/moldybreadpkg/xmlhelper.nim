@@ -119,7 +119,7 @@ proc get_text_of_element_with_attribute*(response, element: string, attribute_wi
   ##        </mods>"""
   ##     element = "identifier"
   ##     attribute_with_value = ("type", "local")
-  ##     assert get_text_of_element_with_attribute(some_xml, identifier, attribute_with_value) == @["lady-vols-basketball_2010"]
+  ##     assert get_text_of_element_with_attribute(some_xml, element, attribute_with_value) == @["lady-vols-basketball_2010"]
   ##
   let
     xml_response = Node.fromStringE(response)
