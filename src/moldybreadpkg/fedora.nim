@@ -23,6 +23,8 @@ type
     client: HttpClient
     uri: string
     pid: string
+    retries: int
+    wait_time: int
   
   GsearchConnection = object
     ## Type to handle Gsearch connections
@@ -237,9 +239,16 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
       output_path = fmt"{output_directory}/{namespace}/{book}"
     if not existsDir(output_path):
       createDir(output_path)
+    notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
     discard this.write_output(fmt"{page_number}{extension}", response.body, output_path)
     true
+  elif this.retries > 0:
+    this.retries -= 1
+    error(fmt"{response.status} - Failed to download page {page_number} of {book_pid} from {this.pid}.")
+    sleep(this.wait_time)
+    this.download_page_with_relationship(output_directory, book_pid, page_number)
   else:
+    fatal(fmt"Attempts to download page {page_number} of {book_pid} from {this.pid} have failed.")
     false
 
 method get_content_model(this: FedoraRecord): string {. base .} =
@@ -461,9 +470,9 @@ method download_page_with_book_relationship*(this: FedoraRequest, datastream_id:
     if response != "":
       let
         book = newTriple(response).obj.replace("<info:fedora/", "").replace(">", "")
-        page_triple = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle&predicate=http://islandora.ca/ontology/relsext%23isPageNumber", pid: pid).get()
+        page_triple = FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/relationships?subject=info%3afedora%2f{pid}&format=turtle&predicate=http://islandora.ca/ontology/relsext%23isPageNumber", pid: pid, retries: 3, wait_time: 3000).get()
         page = newTriple(page_triple).obj.replace(""""""", "")
-      discard FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid).download_page_with_relationship(this.output_directory, book, page)
+      discard FedoraRecord(client: this.client, uri: fmt"{this.base_url}/fedora/objects/{pid}/datastreams/{datastream_id}/content", pid: pid, retries: 3, wait_time: 3000).download_page_with_relationship(this.output_directory, book, page)
       result.add((book, page, pid))
     if i in ticks:
       bar.increment()
