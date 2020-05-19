@@ -229,7 +229,7 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
   else:
     false
 
-method grab_mods_by_pid(this: FedoraRecord, book_pid): bool {. base .} =
+method grab_mods_by_pid(book_pid): bool {. base .} =
   let 
     mods = fmt"https://digital.lib.utk.edu/collections/islandora/object/{book_pid}/datastream/MODS/view"
     response = this.client.request(mods, httpMethod = HttpGet)
@@ -244,7 +244,7 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     response = this.client.request(this.uri, httpMethod = HttpGet)
   if response.status == "200 OK":
     let 
-      mods = grab_mods_by_pid(this, book_pid)
+      mods = this.grab_mods_by_pid(book_pid)
       extension = this.get_extension(response.headers)
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
