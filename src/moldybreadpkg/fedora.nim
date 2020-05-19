@@ -237,6 +237,8 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
       output_path = fmt"{output_directory}/{namespace}/{book}"
+      mods_record = FedoraRecord(client: this.client, uri: fmt"http://localhost:8080/fedora/objects/{book_pid}/datastreams/MODS/content")
+      mods_response = mods_record.download(output_path, "mods")
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
