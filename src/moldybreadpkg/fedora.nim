@@ -240,7 +240,7 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
-    discard this.write_output(fmt"{parseInt(page_number, num):6}{extension}", response.body, output_path)
+    discard this.write_output(fmt"{parseInt(page_number):6}{extension}", response.body, output_path)
     true
   elif this.retries > 0:
     this.retries -= 1
