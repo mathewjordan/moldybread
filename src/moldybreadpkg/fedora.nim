@@ -243,9 +243,8 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     
     if metadata.status == "200 OK":
       stdout.write(metadata.body)
-    else
+    else:
       false
-      
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
