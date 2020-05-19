@@ -232,7 +232,7 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
 proc grab_mods_by_pid(pid: string): string =
   let 
     mods = fmt"https://digital.lib.utk.edu/collections/islandora/object/{pid}/datastream/MODS/view"
-    response = this.client.request(mods, httpMethod = HttpGet)
+    response = client.request(mods, httpMethod = HttpGet)
   if response.status == "200 OK":
     notice(fmt"Successfully grabbed mods.")
   else:
