@@ -236,7 +236,6 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
   if response.status == "200 OK":
     let 
       metadata = this.client.request(mods, httpMethod = HttpGet)
-      identifier = parse_data(response, "identifier")
       extension = this.get_extension(response.headers)
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
