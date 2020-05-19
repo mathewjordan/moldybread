@@ -1,4 +1,4 @@
-import httpclient, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml, rdfhelper, logging
+import httpclient, parseutils, strformat, xmltools, strutils, base64, progress, os, xmlhelper, times, sequtils, math, xacml, rdfhelper, logging
 
 type
   FedoraRequest* = ref object
@@ -240,7 +240,7 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
-    discard this.write_output(fmt"{page_number}{extension}", response.body, output_path)
+    discard this.write_output(fmt"{parseInt(page_number:6, num)}{extension}", response.body, output_path)
     true
   elif this.retries > 0:
     this.retries -= 1
