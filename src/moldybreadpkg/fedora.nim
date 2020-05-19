@@ -235,10 +235,13 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     let 
       extension = this.get_extension(response.headers)
       namespace = book_pid.split(""":""")[0]
-      book = book_pid.split(""":""")[1]
-      output_path = fmt"{output_directory}/{namespace}/{book}"
-      mods_record = FedoraRecord(client: this.client, uri: fmt"http://localhost:8080/fedora/objects/{book_pid}/datastreams/MODS/content")
+      # book = book_pid.split(""":""")[1]
+      mods_record = FedoraRecord(client: this.client, uri: fmt"http://localhost:8080/fedora/objects/{book_pid}/datastreams/MODS/content", pid: book_pid)
+      mods_body = mods_record.get()
+      local_identifier = get_text_of_element_with_attribute(mods_body, "identifier", ("type", "local"))[0]
+      output_path = fmt"{output_directory}/{namespace}/{local_identifier}"
       mods_response = mods_record.download(output_path, "mods")
+    echo mods_record.body
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
