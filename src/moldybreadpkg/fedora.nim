@@ -237,9 +237,10 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
     let 
       metadata = this.client.request(mods, httpMethod = HttpGet)
       extension = this.get_extension(response.headers)
+      indentifier = ""
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
-      output_path = fmt"{output_directory}/{namespace}/{identifier}"
+      output_path = fmt"{output_directory}/{namespace}/{namespace}"
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
