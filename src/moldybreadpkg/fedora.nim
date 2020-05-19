@@ -229,7 +229,7 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
   else:
     false
 
-proc grab_mods_by_pid(pid: string): string =
+method grab_mods_by_pid(this: FedoraRecord, pid: string): string {. base .} =
   let 
     client = newHttpClient()
     mods = fmt"https://digital.lib.utk.edu/collections/islandora/object/{pid}/datastream/MODS/view"
