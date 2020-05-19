@@ -236,9 +236,10 @@ proc grab_mods_by_pid(pid: string): string =
     response = client.request(mods, httpMethod = HttpGet)
   if response.status == "200 OK":
     notice(fmt"Successfully grabbed mods.")
+    result = "success"
   else:
     fatal(fmt"Failed to get mods.")
-    false
+    result = "fail"
 
 method download_page_with_relationship(this: FedoraRecord, output_directory, book_pid, page_number: string): bool {. base .} =
   let 
