@@ -236,14 +236,16 @@ method download_page_with_relationship(this: FedoraRecord, output_directory, boo
   if response.status == "200 OK":
     let 
       metadata = this.client.request(mods, httpMethod = HttpGet)
-      if metadata.status == "200 OK":
-        stdout.write(metadata.body)
-      else
-        false
       extension = this.get_extension(response.headers)
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
       output_path = fmt"{output_directory}/{namespace}/{book}"
+    
+    if metadata.status == "200 OK":
+      stdout.write(metadata.body)
+    else
+      false
+      
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
