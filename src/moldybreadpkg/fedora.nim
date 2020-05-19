@@ -229,22 +229,26 @@ method download(this: FedoraRecord, output_directory: string, suffix=""): bool {
   else:
     false
 
+method grab_mods_by_pid(pid): bool {. base .} =
+  let 
+    mods = fmt"https://digital.lib.utk.edu/collections/islandora/object/{pid}/datastream/MODS/view"
+    response = this.client.request(mods, httpMethod = HttpGet)
+  if response.status == "200 OK":
+    notice(fmt"Successfully grabbed mods.")
+  else:
+    fatal(fmt"Failed to get mods.")
+    false
+
 method download_page_with_relationship(this: FedoraRecord, output_directory, book_pid, page_number: string): bool {. base .} =
   let 
     response = this.client.request(this.uri, httpMethod = HttpGet)
-    mods = fmt"https://digital.lib.utk.edu/collections/islandora/object/{book_pid}/datastream/MODS/view"
   if response.status == "200 OK":
     let 
-      metadata = this.client.request(mods, httpMethod = HttpGet)
+      mods = grab_mods_by_pid(book_pid)
       extension = this.get_extension(response.headers)
       namespace = book_pid.split(""":""")[0]
       book = book_pid.split(""":""")[1]
       output_path = fmt"{output_directory}/{namespace}/{book}"
-    
-    if metadata.status == "200 OK":
-      stdout.write(metadata.body)
-    else:
-      false
     if not existsDir(output_path):
       createDir(output_path)
     notice(fmt"Successfully downloaded page {page_number} of {book_pid} from {this.pid}.")
